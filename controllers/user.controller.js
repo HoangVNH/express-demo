@@ -1,4 +1,4 @@
-const { userServiceFactory } = require('../Service/user.service');
+const { userServiceFactory } = require('../services/user.service');
 
 const signIn = async (req, res, next) => {
   const { email, password } = req.body;
@@ -12,4 +12,8 @@ const signIn = async (req, res, next) => {
   } catch (error) {
       return next(errorHandler(500, "error", error));
   }
+};
+
+module.exports = {
+    signIn,
 };

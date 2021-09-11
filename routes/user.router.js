@@ -1,5 +1,5 @@
-const { signIn } = require('../Controller/user.controller');
-const { loginValidation } = require('../Middleware');
+const { signIn } = require('../controllers/user.controller');
+const { loginValidation } = require('../middlewares');
 const router = require('express').Router();
 
 router.post('/signin', loginValidation, signIn);
