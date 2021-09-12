@@ -27,11 +27,12 @@ const db = require('./databases/models');
     // Handle undefined routes
     app.all("*", (req, res, next) => {
         next(
-            errorHelper(
-                404,
-                "error",
-                `Can't find ${req.method} ${req.originalUrl} on this server!`,
-            ),
+            // TODO: Hoang need to review
+            // errorHelper(
+            //     404,
+            //     "error",
+            //     `Can't find ${req.method} ${req.originalUrl} on this server!`,
+            // ),
         );
     });
 
