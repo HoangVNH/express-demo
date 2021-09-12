@@ -11,7 +11,7 @@ app.use(express.json());
 // Routing
 const routes = require('./routes');
 
-app.use(routes);
+app.use('/api', routes);
 
 // Handle undefined routes
 app.all("*", (req, res, next) => {
