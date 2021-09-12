@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
-const db = require('./databases/models');
+const db = require('./sequelize/models');
+const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-middleware');
 
 (async () => {
     try {
@@ -19,9 +20,15 @@ const db = require('./databases/models');
 
     app.use(express.json());
 
+    // Handling initialize executedBy
+    app.use((req, res, next) => {
+        req.body.executedBy = '00000000-0000-0000-0000-000000000000';
+
+        next();
+    });
+
     // Routing
     const routes = require('./routes');
-
     app.use('/api', routes);
 
     // Handle undefined routes
@@ -35,6 +42,9 @@ const db = require('./databases/models');
             // ),
         );
     });
+
+    // Handling exceptions
+    app.use(exceptionHandlerMiddleware);
 
     app.listen(PORT);
 })().catch(error => {
