@@ -1,3 +1,4 @@
+const initDataAsync = require('./sequelize/data-initializer');
 const express = require('express');
 const mysql = require('mysql2/promise');
 const db = require('./sequelize/models');
@@ -10,6 +11,15 @@ const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-mid
         console.log('Syncing Database Succesfully.');
     } catch (error) {
         console.log('Syncing Database Failed.');
+        throw error;
+    }
+
+    try {
+        // initializing data
+        await initDataAsync();
+        console.log('Initializing data Succesfully.');
+    } catch (error) {
+        console.log('Initializing data Failed.');
         throw error;
     }
     const PORT = 5000;
