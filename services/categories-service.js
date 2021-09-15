@@ -28,11 +28,7 @@ const categoriesService = {
             result.isActive = true;
             result.updatedBy = executedBy;
 
-            await result.update({
-                parentId: data.parentId,
-                isActive: true,
-                updatedBy: executedBy,
-            });
+            await result.save();
         }
 
         return result;
