@@ -4,7 +4,7 @@ const {
     DataTypes
 } = require('sequelize');
 module.exports = (sequelize) => {
-    class Product extends Model {
+    class User extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -14,19 +14,28 @@ module.exports = (sequelize) => {
             // define association here
         }
     };
-    Product.init({
+    User.init({
         id: {
             allowNull: false,
             primaryKey: true,
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
         },
-        name: {
+        firstName: {
             allowNull: false,
             type: DataTypes.STRING,
-            // KNOWN ISSUES #12889 AT: https://github.com/sequelize/sequelize/issues/12889
-            // NOTE: DO NOT DECLARE UNIQUE CONSTRANIT LIKE THIS
-            // unique: true,
+        },
+        lastName: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
+        address: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
+        email: {
+            allowNull: false,
+            type: DataTypes.STRING,
         },
         isActive: {
             allowNull: false,
@@ -42,17 +51,15 @@ module.exports = (sequelize) => {
         },
     }, {
         sequelize,
-        modelName: 'Product',
+        modelName: 'User',
         indexes: [
-            // KNOWN ISSUES #12889 AT: https://github.com/sequelize/sequelize/issues/12889
-            // NOTE: SHOULD DO THIS WAY
             {
                 unique: true,
                 fields: [
-                    "name",
+                    "email",
                 ]
             },
         ],
     });
-    return Product;
+    return User;
 };
