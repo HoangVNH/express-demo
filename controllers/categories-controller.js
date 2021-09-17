@@ -9,6 +9,7 @@ const categoriesController = {
             requestBody.parentId === undefined ? null : requestBody.parentId,
             requestBody.executedBy);
 
+        // TODO: return status code 201
         res.send();
     },
 
@@ -30,12 +31,14 @@ const categoriesController = {
         await categoriesService.updateActiveAsync(req.params.id,
             requestBody.name);
 
+        // TODO: return appropriate status code
         res.send();
     },
 
     async inactiveAsync(req, res) {
         await categoriesService.inactiveAsync(req.params.id);
 
+        // TODO: return appropriate status code
         res.send();
     },
 }

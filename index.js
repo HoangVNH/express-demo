@@ -38,8 +38,8 @@ const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-mid
     });
 
     // Routing
-    const routes = require('./routes');
-    app.use('/api', routes);
+    const routers = require('./routers');
+    app.use('/api', routers);
 
     // Handle undefined routes
     app.all("*", (req, res, next) => {

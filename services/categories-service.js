@@ -17,7 +17,7 @@ const categoriesService = {
 
         validateAndThrowExceptionHelper(createCategorySchema, data);
 
-        var result = await getByNameAsync(name);
+        var result = await getByNameAsync(data.name);
         if (result === null) {
             result = categoriesRepository.create(data);
         }
@@ -76,6 +76,7 @@ const categoriesService = {
         return result;
     },
 
+    // TODO: Need to inactive product also
     inactiveAsync(id) {
         var result = categoriesRepository.update(
             {
@@ -94,7 +95,7 @@ const categoriesService = {
 
         return result;
     },
-}
+};
 
 function getByNameAsync(name) {
     var result = categoriesRepository.findOne({
