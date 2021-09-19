@@ -1,5 +1,6 @@
 const { userServiceFactory } = require('../services/user.service');
 const usersService = require('../services/users-service');
+const { StatusCodes } = require('http-status-codes');
 
 const usersController = {
     async registerAsync(req, res) {
@@ -13,8 +14,7 @@ const usersController = {
             password,
             executedBy);
 
-        // TODO: return status code 201
-        res.send();
+        res.send(StatusCodes.CREATED);
     },
 
     async signIn(req, res, next) {
