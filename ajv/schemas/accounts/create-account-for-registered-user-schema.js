@@ -6,7 +6,7 @@ const schema = {
             format: 'uuid',
         },
         password: { type: 'string' },
-        isVerified: { type: 'boolean' },
+        isOtpVerified: { type: 'boolean' },
         isActive: { type: 'boolean' },
         createdBy: { type: 'string' },
         updatedBy: { type: 'string' },
@@ -14,7 +14,7 @@ const schema = {
     required: [
         'userId',
         'password',
-        'isVerified',
+        'isOtpVerified',
         'isActive',
         'createdBy',
         'updatedBy',

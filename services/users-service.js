@@ -2,11 +2,13 @@ const usersRepository = require("../sequelize/models").User;
 const userRegisterSchema = require('../ajv/schemas/users/user-register-schema');
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
+const db = require('../sequelize/models');
 const accountsService = require("./accounts-service");
+const emailsService = require("./emails-service");
 
 const usersService = {
     async registerAsync(firstName, lastName, email, address, password, executedBy) {
-        var user = {
+        var data = {
             firstName,
             lastName,
             email,
@@ -16,21 +18,32 @@ const usersService = {
             updatedBy: executedBy,
         };
 
-        validateAndThrowExceptionHelper(userRegisterSchema, user);
+        validateAndThrowExceptionHelper(userRegisterSchema, data);
 
-        const isExistEmail = await isExistEmailAsync(user.email);
+        const isExistEmail = await isExistEmailAsync(data.email);
         if (isExistEmail) {
-            throw new UniqueConstraintViolatedException(user.email);
+            throw new UniqueConstraintViolatedException(data.email);
         }
 
-        const result = await usersRepository.create(user);
+        const results = await db.sequelize.transaction(async (transaction) => {
+            const user = await usersRepository.create(data, { transaction });
 
-        await accountsService.createAccountForRegisteredUserAsync(
-            result.id,
-            password,
-            executedBy);
+            user.account = await accountsService.createAccountForRegisteredUserAsync(
+                user.id,
+                password,
+                executedBy,
+                transaction);
 
-        return result;
+            await emailsService.sendUserRegistrationEmailAsync(
+                user.firstName,
+                user.lastName,
+                user.email,
+                user.account.otp);
+
+            return user;
+        });
+
+        return results;
     },
 };
 

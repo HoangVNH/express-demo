@@ -26,9 +26,18 @@ module.exports = (sequelize) => {
             },
         },
         password: {
+            allowNull: false,
             type: DataTypes.STRING,
         },
-        isVerified: {
+        otp: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
+        otpExpiryDate: {
+            allowNull: false,
+            type: DataTypes.DATE,
+        },
+        isOtpVerified: {
             allowNull: false,
             type: DataTypes.BOOLEAN,
         },
@@ -49,15 +58,6 @@ module.exports = (sequelize) => {
         modelName: 'Account',
         indexes: [
         ],
-        // https://stackoverflow.com/questions/34120548/using-bcrypt-with-sequelize-model
-        // instanceMethods: {
-        //     generateHash(password) {
-        //         return bcrypt.hash(password, bcrypt.genSaltSync(this.seed));
-        //     },
-        //     validPassword(password) {
-        //         return bcrypt.compare(password, this.password);
-        //     }
-        // },
     });
     return Account;
 };
