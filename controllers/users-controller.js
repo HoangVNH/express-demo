@@ -17,6 +17,16 @@ const usersController = {
         res.send(StatusCodes.CREATED);
     },
 
+    async verifyAsync(req, res) {
+        const { email, otp } = req.body;
+
+        await usersService.verifyAsync(
+            email,
+            otp);
+
+        res.send(StatusCodes.NO_CONTENT);
+    },
+
     async signIn(req, res, next) {
         const { email, password } = req.body;
         try {

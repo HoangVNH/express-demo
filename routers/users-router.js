@@ -4,6 +4,7 @@ const router = require('express').Router();
 const asyncHandler = require('../handlers/async-handler');
 
 router.post('/signin', loginValidation, usersController.signIn)
+    .post('/verify', asyncHandler(usersController.verifyAsync))
     .post('/register', asyncHandler(usersController.registerAsync));
 
 module.exports = router;
