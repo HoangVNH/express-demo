@@ -3,15 +3,15 @@ const usersService = require('../services/users-service');
 
 const usersController = {
     async registerAsync(req, res) {
-        const requestBody = req.body;
+        const { firstName, lastName, email, address, password, executedBy } = req.body;
 
         await usersService.registerAsync(
-            requestBody.firstName,
-            requestBody.lastName,
-            requestBody.email,
-            requestBody.address,
-            requestBody.password,
-            requestBody.executedBy);
+            firstName,
+            lastName,
+            email,
+            address,
+            password,
+            executedBy);
 
         // TODO: return status code 201
         res.send();

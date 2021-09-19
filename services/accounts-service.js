@@ -5,14 +5,14 @@ const bcrypt = require('bcrypt');
 const moment = require('moment');
 
 const accountsService = {
-    async createAccountForRegisteredUserAsync(userId, password, executedBy, transaction) {
+    async createAccountForRegisteredUserAsync(userId, password, transaction) {
         var account = {
             userId,
             password,
             isOtpVerified: false,
             isActive: true,
-            createdBy: executedBy,
-            updatedBy: executedBy,
+            createdBy: userId,
+            updatedBy: userId,
         };
 
         validateAndThrowExceptionHelper(createAccountForRegisteredUserSchema,

@@ -31,7 +31,6 @@ const usersService = {
             user.account = await accountsService.createAccountForRegisteredUserAsync(
                 user.id,
                 password,
-                executedBy,
                 transaction);
 
             await emailsService.sendUserRegistrationEmailAsync(
