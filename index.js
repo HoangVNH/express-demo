@@ -22,7 +22,7 @@ const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-mid
         console.log('Initializing data Failed.');
         throw error;
     }
-    const PORT = 5000;
+    const PORT = process.env.PORT || 5000;
 
     const app = express();
 
