@@ -5,9 +5,10 @@ const bcrypt = require('bcrypt');
 const moment = require('moment');
 
 const CorruptedDataException = require('./exceptions/corrupted-data-exception');
-const AlreadyVerifiedAccountException = require('./exceptions/users/already-verfied-account-exception');
-const ExpiredOtpException = require('./exceptions/users/expired-otp-exception');
-const InvalidOtpException = require('./exceptions/users/invalid-otp-exception');
+const AlreadyVerifiedAccountException = require('./exceptions/accounts/already-verfied-account-exception');
+const ExpiredOtpException = require('./exceptions/accounts/expired-otp-exception');
+const InvalidOtpException = require('./exceptions/accounts/invalid-otp-exception');
+const TooManyRequestResendOTPException = require('./exceptions/accounts/too-many-request-resend-otp-exception');
 
 const accountsService = {
     async createAccountForRegisteredUserAsync(userId, password, transaction) {
@@ -26,24 +27,45 @@ const accountsService = {
         // Hashing Password
         account.password = await bcrypt.hash(account.password, SALT_ROUNDS);
 
-        // Generating random OTP
-        const randomOtp = Math.floor(Math.random() * Math.floor(999999));
-
-        // Hashing OTP
-        account.otp = await bcrypt.hash(randomOtp.toString(), SALT_ROUNDS);
-
-        // Set OTP expiry date
-        const now = new moment();
-        account.otpExpiryDate = now.add(5, 'm').toDate();
+        // Generating random OTP & OTP expiry date
+        account.otp = generateOTP();
+        account.otpExpiryDate = generateOTPExpiryDate();
+        account.otpResendDate = generateOTPResendDate();
 
         // Store in DB
         const result = await repository.create(account, { transaction });
-        result.otp = randomOtp;
 
         return result;
     },
 
-    async verifyAsync(account, plainOtp) {
+    async requestToResendOTPAsync(account, transaction) {
+        const result = account;
+        if (result === null || result.isActive === false) {
+            throw new CorruptedDataException();
+        } else if (result.isOtpVerified) {
+            throw new AlreadyVerifiedAccountException();
+        }
+
+        const executedAt = new moment().toDate();
+        if (result.otpResendDate > executedAt) {
+            throw new TooManyRequestResendOTPException();
+        }
+
+        if (result.otpExpiryDate < executedAt) {
+            // Create new OTP
+            result.otp = generateOTP();
+            result.otpExpiryDate = generateOTPExpiryDate();
+        }
+
+        result.otpResendDate = generateOTPResendDate();
+
+        // Store in DB
+        result.save({ transaction });
+
+        return result;
+    },
+
+    async verifyAsync(account, otp) {
         const result = account;
         if (result === null || result.isActive === false) {
             throw new CorruptedDataException();
@@ -56,12 +78,11 @@ const accountsService = {
             throw new ExpiredOtpException();
         }
 
-        const isOtpVerified = await bcrypt.compare(plainOtp.toString(), result.otp);
-        if (isOtpVerified === false) {
+        if (result.otp !== otp) {
             throw new InvalidOtpException();
         }
 
-        result.isOtpVerified = isOtpVerified;
+        result.isOtpVerified = true;
         result.save();
 
         return result;
@@ -69,5 +90,27 @@ const accountsService = {
 };
 
 const SALT_ROUNDS = 10;
+
+function generateOTP() {
+    min = Math.ceil(100000);
+    max = Math.floor(999999);
+    const result = Math.floor(Math.random() * (max - min + 1) + min);
+
+    return result;
+}
+
+function generateOTPExpiryDate() {
+    const now = new moment();
+    const result = now.add(5, 'm').toDate();
+
+    return result
+}
+
+function generateOTPResendDate() {
+    const now = new moment();
+    const result = now.add(2, 'm').toDate();
+
+    return result;
+}
 
 module.exports = accountsService;

@@ -2,6 +2,8 @@ const { userServiceFactory } = require('../services/user.service');
 const usersService = require('../services/users-service');
 const { StatusCodes } = require('http-status-codes');
 
+const TooManyRequestResendOTPException = require('../services/exceptions/accounts/too-many-request-resend-otp-exception');
+
 const usersController = {
     async registerAsync(req, res) {
         const { firstName, lastName, email, address, password, executedBy } = req.body;
@@ -14,7 +16,23 @@ const usersController = {
             password,
             executedBy);
 
-        res.send(StatusCodes.CREATED);
+        res.status(StatusCodes.CREATED).send();
+    },
+
+    async resendOTPAsync(req, res) {
+        try {
+            await usersService.resendOTPAsync(
+                req.params.email);
+
+            res.status(StatusCodes.ACCEPTED).send();
+        } catch (error) {
+            if (error instanceof TooManyRequestResendOTPException) {
+                res.status(StatusCodes.TOO_MANY_REQUESTS).send();
+            }
+            else {
+                throw error;
+            }
+        }
     },
 
     async verifyAsync(req, res) {
@@ -22,9 +40,9 @@ const usersController = {
 
         await usersService.verifyAsync(
             email,
-            otp);
+            Number(otp));
 
-        res.send(StatusCodes.NO_CONTENT);
+        res.status(StatusCodes.NO_CONTENT).send();
     },
 
     async signIn(req, res, next) {

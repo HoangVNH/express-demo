@@ -31,10 +31,13 @@ module.exports = (sequelize) => {
         },
         otp: {
             allowNull: false,
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
         },
         otpExpiryDate: {
             allowNull: false,
+            type: DataTypes.DATE,
+        },
+        otpResendDate: {
             type: DataTypes.DATE,
         },
         isOtpVerified: {

@@ -3,8 +3,9 @@ const { loginValidation } = require('../middlewares');
 const router = require('express').Router();
 const asyncHandler = require('../handlers/async-handler');
 
-router.post('/signin', loginValidation, usersController.signIn)
+router.post('/register', asyncHandler(usersController.registerAsync))
+    .get('/resend-otp/:email', asyncHandler(usersController.resendOTPAsync))
     .post('/verify', asyncHandler(usersController.verifyAsync))
-    .post('/register', asyncHandler(usersController.registerAsync));
+    .post('/signin', loginValidation, usersController.signIn);
 
 module.exports = router;

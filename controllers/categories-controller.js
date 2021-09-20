@@ -10,7 +10,7 @@ const categoriesController = {
             requestBody.parentId === undefined ? null : requestBody.parentId,
             requestBody.executedBy);
 
-        res.send(StatusCodes.CREATED);
+        res.status(StatusCodes.CREATED).send();
     },
 
     async getAllActiveAsync(req, res) {
@@ -31,13 +31,13 @@ const categoriesController = {
         await categoriesService.updateActiveAsync(req.params.id,
             requestBody.name);
 
-        res.send(StatusCodes.NO_CONTENT);
+        res.status(StatusCodes.NO_CONTENT).send();
     },
 
     async inactiveAsync(req, res) {
         await categoriesService.inactiveAsync(req.params.id);
 
-        res.send(StatusCodes.NO_CONTENT);
+        res.status(StatusCodes.NO_CONTENT).send();
     },
 }
 
