@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
         }
     };
     Account.init({
-        userId: {
+        accountId: {
             allowNull: false,
             primaryKey: true,
             type: DataTypes.UUID,

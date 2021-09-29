@@ -33,6 +33,10 @@ module.exports = (sequelize) => {
             allowNull: false,
             type: DataTypes.STRING,
         },
+        imagePath: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
         isActive: {
             allowNull: false,
             type: DataTypes.BOOLEAN,

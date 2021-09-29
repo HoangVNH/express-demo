@@ -1,14 +1,14 @@
 const { userServiceFactory } = require('../services/user.service');
-const usersService = require('../services/users-service');
+const authsService = require('../services/auths-service');
 const { StatusCodes } = require('http-status-codes');
 
 const TooManyRequestResendOTPException = require('../services/exceptions/accounts/too-many-request-resend-otp-exception');
 
-const usersController = {
-    async registerAsync(req, res) {
+const authsController = {
+    async registerNewBidderAsync(req, res) {
         const { firstName, lastName, email, address, password, executedBy } = req.body;
 
-        await usersService.registerAsync(
+        await authsService.registerNewBidderUserAsync(
             firstName,
             lastName,
             email,
@@ -21,7 +21,7 @@ const usersController = {
 
     async resendOTPAsync(req, res) {
         try {
-            await usersService.resendOTPAsync(
+            await authsService.resendOTPAsync(
                 req.params.email);
 
             res.status(StatusCodes.ACCEPTED).send();
@@ -38,7 +38,7 @@ const usersController = {
     async verifyAsync(req, res) {
         const { email, otp } = req.body;
 
-        await usersService.verifyAsync(
+        await authsService.verifyAsync(
             email,
             Number(otp));
 
@@ -60,4 +60,4 @@ const usersController = {
     },
 };
 
-module.exports = usersController;
+module.exports = authsController;

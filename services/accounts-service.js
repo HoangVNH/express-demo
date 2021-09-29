@@ -11,29 +11,8 @@ const InvalidOtpException = require('./exceptions/accounts/invalid-otp-exception
 const TooManyRequestResendOTPException = require('./exceptions/accounts/too-many-request-resend-otp-exception');
 
 const accountsService = {
-    async createAccountForRegisteredUserAsync(userId, password, transaction) {
-        var account = {
-            userId,
-            password,
-            isOtpVerified: false,
-            isActive: true,
-            createdBy: userId,
-            updatedBy: userId,
-        };
-
-        validateAndThrowExceptionHelper(createAccountForRegisteredUserSchema,
-            account);
-
-        // Hashing Password
-        account.password = await bcrypt.hash(account.password, SALT_ROUNDS);
-
-        // Generating random OTP & OTP expiry date
-        account.otp = generateOTP();
-        account.otpExpiryDate = generateOTPExpiryDate();
-        account.otpResendDate = generateOTPResendDate();
-
-        // Store in DB
-        const result = await repository.create(account, { transaction });
+    async createAccountAsync(userId, password, transaction) {
+        const result = await createAsync(userId, password, transaction);
 
         return result;
     },
@@ -90,6 +69,33 @@ const accountsService = {
 };
 
 const SALT_ROUNDS = 10;
+
+async function createAsync(userId, password, transaction) {
+    var account = {
+        accountId: userId,
+        password,
+        isOtpVerified: false,
+        isActive: true,
+        createdBy: userId,
+        updatedBy: userId,
+    };
+
+    validateAndThrowExceptionHelper(createAccountForRegisteredUserSchema,
+        account);
+
+    // Hashing Password
+    account.password = await bcrypt.hash(account.password, SALT_ROUNDS);
+
+    // Generating random OTP & OTP expiry date
+    account.otp = generateOTP();
+    account.otpExpiryDate = generateOTPExpiryDate();
+    account.otpResendDate = generateOTPResendDate();
+
+    // Store in DB
+    const result = await repository.create(account, { transaction });
+
+    return result;
+};
 
 function generateOTP() {
     min = Math.ceil(100000);

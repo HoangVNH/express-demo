@@ -1,3 +1,4 @@
+const RolesEnum = require('../constants/roles-enum');
 const db = require('./models');
 const models = db.sequelize.models;
 
@@ -14,7 +15,7 @@ async function initializingRolesAsync(executedBy, executedTime) {
     if (roles.count === 0) {
         await roleRepository.bulkCreate([
             {
-                name: 'Administrator',
+                name: RolesEnum.Administrator,
                 isActive: true,
                 createdBy: executedBy,
                 createdAt: executedTime,
@@ -22,7 +23,7 @@ async function initializingRolesAsync(executedBy, executedTime) {
                 updatedBy: executedBy,
             },
             {
-                name: 'Bidder',
+                name: RolesEnum.Bidder,
                 isActive: true,
                 createdBy: executedBy,
                 createdAt: executedTime,
@@ -30,7 +31,7 @@ async function initializingRolesAsync(executedBy, executedTime) {
                 updatedBy: executedBy,
             },
             {
-                name: 'Saler',
+                name: RolesEnum.Saler,
                 isActive: true,
                 createdBy: executedBy,
                 createdAt: executedTime,
