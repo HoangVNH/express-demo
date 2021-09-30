@@ -1,7 +1,7 @@
 const schema = {
     type: 'object',
     properties: {
-        accountId: {
+        id: {
             type: 'string',
             format: 'uuid',
         },
@@ -12,7 +12,7 @@ const schema = {
         updatedBy: { type: 'string' },
     },
     required: [
-        'accountId',
+        'id',
         'password',
         'isOtpVerified',
         'isActive',

@@ -1,5 +1,6 @@
 const repository = require("../sequelize/models").AccountRole;
 
+const RolesEnum = require("../constants/roles-enum");
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const CorruptedDataException = require('./exceptions/corrupted-data-exception');
 const createAcountRoleSchema = require("../ajv/schemas/account-roles/create-account-role-schema");
@@ -7,35 +8,70 @@ const createAcountRoleSchema = require("../ajv/schemas/account-roles/create-acco
 const rolesService = require("../services/roles-services");
 
 const accountRolesService = {
-    async setAccountAsBidderAsync(accountId, transaction) {
-        var bidderRoleId = await rolesService.getBidderRoleIdAsync(transaction);
-        if (bidderRoleId === null) {
-            throw new CorruptedDataException();
-        }
+    async setAccountAsBidderAsync(acountId, transaction) {
+        const result = await assignRoleByRolesEnumAsync(
+            acountId,
+            RolesEnum.Bidder,
+            transaction);
 
-        // Check need to create or update
-        var result = await getAssignedRoleAsync(accountId, bidderRoleId, transaction);
-        if (result === null) {
-            result = await createAsync(accountId, bidderRoleId, transaction);
-        } else if (result.isActive === false) {
-            result.isActive = true;
+        return result;
+    },
 
-            await result.save({ transaction });
-        }
+    async setAccountAsAdminstratorAsync(acountId, transaction) {
+        const result = await assignRoleByRolesEnumAsync(
+            acountId,
+            RolesEnum.Administrator,
+            transaction);
 
         return result;
     },
 };
 
-async function getAssignedRoleAsync(accountId,
-    roleId,
+async function assignRoleByRolesEnumAsync(accountId,
+    rolesEnum,
     transaction) {
-    // TODO: enhance this method to check exist actually and return true/false only,
-    // select all attibutes and count records are not good solution
-    var result = await repository.findOne({
+    const roleId = await rolesService.getRoleIdByEnumAsync(rolesEnum,
+        transaction);
+    if (roleId === null) {
+        throw new CorruptedDataException();
+    }
+
+    var result = null;
+    const isRoleAlreadyExist = false;
+    const roles = await getAssignedRolesAsync(accountId, transaction);
+    if (roles !== null && roles.length > 0) {
+        for (const x of roles) {
+            if (x.roleId === roleId) {
+                if (x.isActive === false) {
+                    x.isActive = true;
+
+                    await x.save({ transaction });
+                }
+
+                isRoleAlreadyExist = true;
+                result = x;
+            } else {
+                x.isActive = false;
+
+                await x.save({ transaction });
+            }
+        }
+    }
+
+    if (isRoleAlreadyExist === false) {
+        result = await createAsync(accountId,
+            roleId,
+            transaction);
+    }
+
+    return result;
+}
+
+async function getAssignedRolesAsync(accountId,
+    transaction) {
+    var result = await repository.findAll({
         where: {
             accountId: accountId,
-            roleId: roleId,
         },
     }, { transaction });
 

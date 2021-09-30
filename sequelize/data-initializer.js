@@ -2,11 +2,17 @@ const RolesEnum = require('../constants/roles-enum');
 const db = require('./models');
 const models = db.sequelize.models;
 
+const usersService = require("../services/users-service");
+const accountsService = require("../services/accounts-service");
+const accountRolesService = require("../services/account-roles-service");
+const authsService = require("../services/auths-service");
+
 async function initDataAsync() {
     const executedBy = '00000000-0000-0000-0000-000000000000';
     const executedTime = new Date();
 
     await initializingRolesAsync(executedBy, executedTime);
+    await initializingAdministratorAccountAsync(executedBy);
 }
 
 async function initializingRolesAsync(executedBy, executedTime) {
@@ -39,6 +45,28 @@ async function initializingRolesAsync(executedBy, executedTime) {
                 updatedBy: executedBy,
             },
         ]);
+    }
+}
+
+async function initializingAdministratorAccountAsync(executedBy) {
+    const userRepository = models.User;
+    const users = await userRepository.findAndCountAll();
+    if (users.count === 0) {
+        await db.sequelize.transaction(async (transaction) => {
+            const user = await usersService.createAsync(
+                'Administrator', '', 'admined@yopmail.com', '', executedBy, transaction);
+
+            const account = await accountsService.createAccountAsync(
+                user.id,
+                '123',
+                transaction);
+
+            account.isOtpVerified = true;
+            await account.save({ transaction });
+
+            await accountRolesService.setAccountAsAdminstratorAsync(
+                account.id, transaction);
+        });
     }
 }
 

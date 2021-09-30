@@ -72,7 +72,7 @@ const SALT_ROUNDS = 10;
 
 async function createAsync(userId, password, transaction) {
     var account = {
-        accountId: userId,
+        id: userId,
         password,
         isOtpVerified: false,
         isActive: true,

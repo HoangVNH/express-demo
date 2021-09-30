@@ -4,7 +4,7 @@ const repository = models.User;
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
 
-const newUserSchema = require('../ajv/schemas/users/new-user-schema');
+const createUserSchema = require('../ajv/schemas/users/create-user-schema');
 
 const usersService = {
     async createAsync(firstName, lastName, email, address, executedBy, transaction) {
@@ -18,7 +18,7 @@ const usersService = {
             updatedBy: executedBy,
         };
 
-        validateAndThrowExceptionHelper(newUserSchema, data);
+        validateAndThrowExceptionHelper(createUserSchema, data);
 
         const isExistEmail = await isExistEmailAsync(data.email);
         if (isExistEmail) {
