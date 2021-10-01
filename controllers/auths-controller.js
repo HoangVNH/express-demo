@@ -1,4 +1,3 @@
-const { userServiceFactory } = require('../services/user.service');
 const authsService = require('../services/auths-service');
 const { StatusCodes } = require('http-status-codes');
 
@@ -45,18 +44,13 @@ const authsController = {
         res.status(StatusCodes.NO_CONTENT).send();
     },
 
-    async signIn(req, res, next) {
+    async signInAsync(req, res) {
         const { email, password } = req.body;
-        try {
-            const uow = await getUnitOfWork(HAS_TRANSACTION.NO);
-            const UserService = userServiceFactory(uow);
-            const userServices = new UserService();
-            const data = await userServices.signIn(email, password);
-            await uow.release();
-            return res.status(data.statusCode).json(data);
-        } catch (error) {
-            return next(errorHandler(500, "error", error));
-        }
+
+        const result = await authsService.signInAndGenerateTokensAsync(
+            email, password);
+
+        res.status(StatusCodes.OK).send(result);
     },
 };
 

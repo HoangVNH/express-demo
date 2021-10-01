@@ -1,4 +1,5 @@
-const repository = require("../sequelize/models").Account;
+const models = require("../sequelize/models");
+const repository = models.Account;
 const createAccountForRegisteredUserSchema = require('../ajv/schemas/accounts/create-account-for-registered-user-schema');
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const bcrypt = require('bcrypt');
@@ -66,6 +67,38 @@ const accountsService = {
 
         return result;
     },
+
+    async getActiveAccountByEmailAsync(email) {
+        var result = await repository.findOne({
+            where: {
+                isActive: true,
+            },
+            include: [
+                {
+                    model: models.User,
+                    where: {
+                        isActive: true,
+                        '$User.email$': email,
+                    },
+                },
+                {
+                    model: models.AccountRole,
+                    where: {
+                        isActive: true,
+                    },
+                    required: false, // USING LEFT JOIN
+                },
+            ],
+        });
+
+        return result;
+    },
+
+    async verifyPasswordAsync(account, plainPassword) {
+        const result = await bcrypt.compareSync(plainPassword, account.password);
+
+        return result;
+    }
 };
 
 const SALT_ROUNDS = 10;

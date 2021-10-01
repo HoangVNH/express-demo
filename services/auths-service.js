@@ -1,9 +1,12 @@
 const models = require("../sequelize/models");
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
+const jwt = require('jsonwebtoken');
 
 const CorruptedDataException = require('./exceptions/corrupted-data-exception');
+const SignInFailureException = require('./exceptions/auths/sign-in-failure-exception');
 
 const resendOTPSchema = require('../ajv/schemas/auths/resend-otp-schema');
+const signInSchema = require('../ajv/schemas/auths/sign-in-schema');
 
 const usersService = require("./users-service");
 const accountsService = require("./accounts-service");
@@ -38,7 +41,7 @@ const authsService = {
     },
 
     async resendOTPAsync(userEmail) {
-        var data = {
+        const data = {
             email: userEmail,
         };
 
@@ -72,6 +75,42 @@ const authsService = {
         await accountsService.verifyAsync(result.Account, otp);
 
         return result;
+    },
+
+    async signInAndGenerateTokensAsync(email, plainPassword) {
+        const data = {
+            email: email,
+            password: plainPassword,
+        };
+
+        validateAndThrowExceptionHelper(signInSchema,
+            data);
+
+        const account = await accountsService.getActiveAccountByEmailAsync(data.email);
+        if (account === null) {
+            throw new SignInFailureException();
+        }
+
+        const isAuthoried = await accountsService.verifyPasswordAsync(
+            account,
+            data.password);
+        if (isAuthoried === false) {
+            throw new SignInFailureException();
+        }
+
+        const accountRoles = account.AccountRoles;
+        if (!accountRoles || accountRoles.length !== 1) {
+            throw new CorruptedDataException();
+        }
+
+        var token = jwt.sign({
+            firstName: account.User.firstName,
+            lastName: account.User.lastName,
+            email: account.User.email,
+            role: accountRoles.find(x => x).roleId,
+        }, process.env.PRIVATE_KEY);
+
+        return token;
     },
 };
 

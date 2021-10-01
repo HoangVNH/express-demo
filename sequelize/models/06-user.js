@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
         static associate(models) {
             // define association here
             models.User.hasOne(models.Account, {
-                foreignKey: 'accountId',
+                foreignKey: 'id',
             });
         }
     };
