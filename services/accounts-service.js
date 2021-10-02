@@ -101,7 +101,7 @@ const accountsService = {
         return result;
     },
 
-    async updateNewAccessTokenAsync(account,
+    async createOrUpdateRefreshTokenAsync(account,
         executedBy) {
         const executedAt = new moment().toDate();
 
