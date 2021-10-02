@@ -98,16 +98,10 @@ const productsService = {
     },
 
     getProductAsync(id) {
-        productsRepository.hasMany(auctionsRepository, { foreignKey: 'productId' })
-        productsRepository.hasMany(productsSubImageRepository, { foreignKey: 'productId' })
-        productsRepository.hasMany(productsDescriptionRepository, { foreignKey: 'productId' })
-        usersRepository.hasMany(auctionsRepository, { foreignKey: 'auctioneerId' })
-        auctionsRepository.belongsTo(usersRepository, { foreignKey: 'auctioneerId' })
-        usersRepository.hasMany(usersRatingRepository, { foreignKey: 'ratedUserId' })
 
 
         var result = productsRepository.findOne({
-            attributes: ['name', 'image'],
+            attributes: ['name', 'imageName', 'imagePath'],
             where: {
                 isActive: true,
                 id: id,
@@ -120,16 +114,6 @@ const productsService = {
                         isActive: true,
                     },
                     required: false,
-                    include: [
-                        {
-                            model: usersRepository,
-                            attributes: ['email'],
-                            where: {
-                                isActive: true,
-                            },
-                            required: false
-                        },
-                    ]
                 },
                 {
                     model: productsSubImageRepository,
@@ -147,7 +131,6 @@ const productsService = {
                     },
                     required: false
                 },
-
             ],
         });
 
