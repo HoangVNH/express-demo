@@ -50,6 +50,12 @@ module.exports = (sequelize) => {
             allowNull: false,
             type: DataTypes.BOOLEAN,
         },
+        refreshToken: {
+            type: DataTypes.STRING,
+        },
+        refreshTokenExpiryDate: {
+            type: DataTypes.DATE,
+        },
         isActive: {
             allowNull: false,
             type: DataTypes.BOOLEAN,

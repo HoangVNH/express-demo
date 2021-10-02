@@ -4,6 +4,7 @@ const createAccountForRegisteredUserSchema = require('../ajv/schemas/accounts/cr
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const bcrypt = require('bcrypt');
 const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
 
 const CorruptedDataException = require('./exceptions/corrupted-data-exception');
 const AlreadyVerifiedAccountException = require('./exceptions/accounts/already-verfied-account-exception');
@@ -98,6 +99,25 @@ const accountsService = {
         const result = await bcrypt.compareSync(plainPassword, account.password);
 
         return result;
+    },
+
+    async updateNewAccessTokenAsync(account,
+        executedBy) {
+        const executedAt = new moment().toDate();
+
+        if (account.refreshToken &&
+            account.refreshTokenExpiryDate &&
+            account.refreshTokenExpiryDate >= executedAt) {
+            return account.refreshToken
+        }
+
+        account.refreshToken = uuidv4();
+        account.refreshTokenExpiryDate = new moment().add(1, 'M').toDate();
+        account.updatedBy = executedBy;
+
+        account.save();
+
+        return account.refreshToken
     }
 };
 

@@ -2,7 +2,7 @@ const BaseServiceException = require('../bases/base-service-exception');
 
 class SignInFailureException extends BaseServiceException {
     constructor() {
-        super(`Sign in was failed.`);
+        super(`Sign in was failed.`, 401);
     }
 }
 

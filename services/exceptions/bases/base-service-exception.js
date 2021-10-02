@@ -1,8 +1,8 @@
 class BaseServiceException extends Error {
-    constructor(message, errorCode) {
+    constructor(message, status = 400) {
         super(message);
 
-        this.status = 400;
+        this.status = status;
 
         // Ensure the name of this error is the same as the class name
         this.name = this.constructor.name;
