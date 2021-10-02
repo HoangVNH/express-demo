@@ -3,19 +3,19 @@ const RolesEnum = require("../constants/roles-enum");
 
 const rolesService = {
     async getAdministratorRoleIdAsync(transaction) {
-        var result = getRoleIdByEnumAsync(RolesEnum.Administrator, transaction);
+        var result = this.getRoleIdByEnumAsync(RolesEnum.Administrator, transaction);
 
         return result;
     },
 
     async getSalerRoleIdAsync(transaction) {
-        var result = getRoleIdByEnumAsync(RolesEnum.Saler, transaction);
+        var result = this.getRoleIdByEnumAsync(RolesEnum.Saler, transaction);
 
         return result;
     },
 
     async getBidderRoleIdAsync(transaction) {
-        var result = getRoleIdByEnumAsync(RolesEnum.Bidder, transaction);
+        var result = this.getRoleIdByEnumAsync(RolesEnum.Bidder, transaction);
 
         return result;
     },
@@ -52,6 +52,16 @@ const rolesService = {
 
 
         return result;
+    },
+
+    async getRolesEnumFromRoleIdAsync(roleId) {
+        if (roleId === await this.getAdministratorRoleIdAsync()) {
+            return RolesEnum.Administrator;
+        } else if (oleId === await this.getSalerRoleIdAsync()) {
+            return RolesEnum.Saler;
+        } else if (oleId === await this.getBidderRoleIdAsync()) {
+            return RolesEnum.Bidder;
+        }
     },
 };
 

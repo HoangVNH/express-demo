@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise');
 fileUpload = require('express-fileupload');
 const db = require('./sequelize/models');
 const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-middleware');
+const authenticationMiddleware = require('./middlewares/authentication-middleware');
 
 (async () => {
     try {
@@ -39,8 +40,8 @@ const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-mid
     });
 
     // Routing
-    const routers = require('./routers');
-    app.use('/api', routers);
+    app.use('/api/auths', require('./routers/auths-router'));
+    app.use('/api', authenticationMiddleware, require('./routers'));
 
     // Handle undefined routes
     app.all("*", (req, res, next) => {
