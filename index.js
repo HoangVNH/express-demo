@@ -1,6 +1,7 @@
 const initDataAsync = require('./sequelize/data-initializer');
 const express = require('express');
 const mysql = require('mysql2/promise');
+fileUpload = require('express-fileupload');
 const db = require('./sequelize/models');
 const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-middleware');
 
@@ -55,7 +56,7 @@ const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-mid
 
     // Handling exceptions
     app.use(exceptionHandlerMiddleware);
-
+    app.use(fileUpload());
     app.listen(PORT);
 })().catch(error => {
     console.log("Unexpected error, Server is shutted down. Exception:");

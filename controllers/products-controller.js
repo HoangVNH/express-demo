@@ -5,12 +5,22 @@ const productsController = {
     async createProductAsync(req, res) {
         const requestBody = req.body;
 
+        if (!req.files)
+            return res.status(400).send('No files image');
+        var file = req.files.uploaded_image;
+        var img_name = file.name;
+        filePath = 'images/upload/' + file.name;
+
+        file.mv(filePath, function (err) {
+            if (err)
+                return res.status(500).send(err);
+        });
+
         var product = await productsService.createProductAsync(
-            //unprocessed image
             requestBody.categoryId,
-            requestBody.name,
+            requestBody.img_name,
             requestBody.imageName,
-            requestBody.imagePath,
+            requestBody.filePath,
             requestBody.executedBy);
 
         var auction = await productsService.createAuctionAsync(
