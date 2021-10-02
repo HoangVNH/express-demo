@@ -103,14 +103,23 @@ const authsService = {
             throw new CorruptedDataException();
         }
 
-        var token = jwt.sign({
-            firstName: account.User.firstName,
-            lastName: account.User.lastName,
-            email: account.User.email,
-            role: accountRoles.find(x => x).roleId,
-        }, process.env.PRIVATE_KEY);
+        // Generate tokens
+        var accessToken = jwt.sign(
+            {
+                firstName: account.User.firstName,
+                lastName: account.User.lastName,
+                email: account.User.email,
+                role: accountRoles.find(x => x).roleId,
+            },
+            process.env.PRIVATE_KEY,
+            {
+                expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+            });
+        var refreshToken = await accountsService.updateNewAccessTokenAsync(
+            account,
+            account.id);
 
-        return token;
+        return { accessToken, refreshToken };
     },
 };
 
