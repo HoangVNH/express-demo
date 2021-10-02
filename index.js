@@ -32,13 +32,6 @@ const authenticationMiddleware = require('./middlewares/authentication-middlewar
 
     app.use(express.json());
 
-    // Handling initialize executedBy
-    app.use((req, res, next) => {
-        req.body.executedBy = '00000000-0000-0000-0000-000000000000';
-
-        next();
-    });
-
     // Routing
     app.use('/api/auths', require('./routers/auths-router'));
     app.use('/api', authenticationMiddleware, require('./routers'));

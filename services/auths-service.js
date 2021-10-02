@@ -106,6 +106,7 @@ const authsService = {
         // Building tokens
         var accessToken = jwt.sign(
             {
+                executedBy: account.id,
                 firstName: account.User.firstName,
                 lastName: account.User.lastName,
                 email: account.User.email,
