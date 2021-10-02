@@ -103,7 +103,7 @@ const authsService = {
             throw new CorruptedDataException();
         }
 
-        // Generate tokens
+        // Building tokens
         var accessToken = jwt.sign(
             {
                 firstName: account.User.firstName,
@@ -115,7 +115,7 @@ const authsService = {
             {
                 expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
             });
-        var refreshToken = await accountsService.updateNewAccessTokenAsync(
+        var refreshToken = await accountsService.createOrUpdateRefreshTokenAsync(
             account,
             account.id);
 
