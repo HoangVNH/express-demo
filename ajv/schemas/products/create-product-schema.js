@@ -7,7 +7,8 @@ const schema = {
             format: 'uuid',
         },
         name: { type: 'string' },
-        image: { type: 'string' },
+        imageName: { type: 'string' },
+        imagePath: { type: 'string' },
         isActive: { type: 'boolean' },
         createdBy: { type: 'string' },
         updatedBy: { type: 'string' },
@@ -15,6 +16,8 @@ const schema = {
     required: [
         'categoryId',
         'name',
+        'imageName',
+        'imagePath',
         'isActive',
         'createdBy',
         'updatedBy',

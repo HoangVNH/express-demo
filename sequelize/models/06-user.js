@@ -15,6 +15,12 @@ module.exports = (sequelize) => {
             models.User.hasOne(models.Account, {
                 foreignKey: 'id',
             });
+            models.User.hasMany(models.Auction, {
+                foreignKey: 'auctioneerId',
+            });
+            models.User.hasMany(models.UserRating, {
+                foreignKey: 'ratingUserId',
+            });
         }
     };
     User.init({

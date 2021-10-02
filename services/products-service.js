@@ -1,5 +1,9 @@
 const productsRepository = require("../sequelize/models").Product;
 const auctionsRepository = require("../sequelize/models").Auction;
+const productsSubImageRepository = require("../sequelize/models").ProductSubImage;
+const productsDescriptionRepository = require("../sequelize/models").ProductDescription;
+const usersRepository = require("../sequelize/models").User;
+const usersRatingRepository = require("../sequelize/models").UserRating;
 const { Op } = require("sequelize");
 
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
@@ -8,10 +12,12 @@ const createAuctionSchema = require('../ajv/schemas/products/create-auction-sche
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
 
 const productsService = {
-    async createProductAsync(categoryId, name, executedBy) {
+    async createProductAsync(categoryId, name, imageName, imagePath, executedBy) {
         var dataProduct = {
             categoryId: categoryId,
             name: name,
+            imageName: imageName,
+            imagePath: imagePath,
             isActive: true,
             createdBy: executedBy,
             updatedBy: executedBy,
@@ -20,7 +26,6 @@ const productsService = {
         validateAndThrowExceptionHelper(createProductSchema, dataProduct);
 
         var resultProduct = productsRepository.create(dataProduct);
-
         return resultProduct;
     },
 
@@ -41,19 +46,45 @@ const productsService = {
         return resultAuction;
     },
 
+    async createproductSubImageAsync(productId, imageName2, imagePath2, executedBy) {
+        var dataSubImage = {
+            name: imageName2,
+            productId: productId,
+            imagePath: imagePath2,
+            isActive: true,
+            createdBy: executedBy,
+            updatedBy: executedBy,
+        };
+
+        var resultdataSubImage = productsSubImageRepository.create(dataSubImage);
+
+        return resultdataSubImage;
+    },
+
+    async createproductDescriptionAsync(productId, description, executedBy) {
+        var dataDescription = {
+            description: description,
+            productId: productId,
+            isActive: true,
+            createdBy: executedBy,
+            updatedBy: executedBy,
+        };
+
+        var resultdataDescription = productsDescriptionRepository.create(dataDescription);
+
+        return resultdataDescription;
+    },
+
     getAllProductAsync() {
-
-        productsRepository.hasMany(auctionsRepository, { foreignKey: 'productId' })
-
         var result = productsRepository.findAll({
-            attributes: ['id', 'categoryId', 'name', 'image'],
+            attributes: ['id', 'name', 'imageName', 'imagePath'],
             where: {
                 isActive: true,
             },
             include: [
                 {
                     model: auctionsRepository,
-                    attributes: ['initPrice',],
+                    attributes: ['initPrice', 'endedAt'],
                     where: {
                         isActive: true,
                     },
@@ -66,27 +97,92 @@ const productsService = {
         return result;
     },
 
-    // getActiveAsync(id) {
-    //     var result = categoriesRepository.findOne({
-    //         attributes: [
-    //             'name',
-    //         ],
-    //         where: {
-    //             isActive: true,
-    //             id: id,
-    //         },
-    //     });
+    getProductAsync(id) {
+        productsRepository.hasMany(auctionsRepository, { foreignKey: 'productId' })
+        productsRepository.hasMany(productsSubImageRepository, { foreignKey: 'productId' })
+        productsRepository.hasMany(productsDescriptionRepository, { foreignKey: 'productId' })
+        usersRepository.hasMany(auctionsRepository, { foreignKey: 'auctioneerId' })
+        auctionsRepository.belongsTo(usersRepository, { foreignKey: 'auctioneerId' })
+        usersRepository.hasMany(usersRatingRepository, { foreignKey: 'ratedUserId' })
 
-    //     return result;
-    // },
 
-    updateProductAsync(id, name, initPrice, buyNowPrice, productPostDate, isAllowNewBidder, endedAt, minBiddingPrice, maxBiddingPrice, biddedBy) {
+        var result = productsRepository.findOne({
+            attributes: ['name', 'image'],
+            where: {
+                isActive: true,
+                id: id,
+            },
+            include: [
+                {
+                    model: auctionsRepository,
+                    attributes: ['initPrice', 'endedAt', 'auctioneerId'],
+                    where: {
+                        isActive: true,
+                    },
+                    required: false,
+                    include: [
+                        {
+                            model: usersRepository,
+                            attributes: ['email'],
+                            where: {
+                                isActive: true,
+                            },
+                            required: false
+                        },
+                    ]
+                },
+                {
+                    model: productsSubImageRepository,
+                    attributes: ['name'],
+                    where: {
+                        isActive: true,
+                    },
+                    required: false
+                },
+                {
+                    model: productsDescriptionRepository,
+                    attributes: ['description'],
+                    where: {
+                        isActive: true,
+                    },
+                    required: false
+                },
+
+            ],
+        });
+
+        return result;
+    },
+
+    updateProductAsync(id, name, initPrice, imageName, imagePath, imageName2, imagePath2, description, buyNowPrice,
+        productPostDate, isAllowNewBidder, endedAt, minBiddingPrice, maxBiddingPrice, biddedBy) {
         var resultProduct = productsRepository.update({
-            name: name
+            name: name,
+            imageName: imageName,
+            imagePath: imagePath
         }, {
             where: {
                 isActive: true,
                 id: id,
+            }
+        });
+
+        var resultProductDescriptions = productsDescriptionRepository.update({
+            description: description
+        }, {
+            where: {
+                isActive: true,
+                productId: id,
+            }
+        });
+
+        var resultProductSubImage = productsSubImageRepository.update({
+            name: imageName2,
+            imagePath: imagePath2
+        }, {
+            where: {
+                isActive: true,
+                productId: id,
             }
         });
 
@@ -121,6 +217,30 @@ const productsService = {
         );
 
         var resultAuction = auctionsRepository.update(
+            {
+                isActive: false,
+            },
+            {
+                where: {
+                    isActive: true,
+                    productId: id
+                },
+            },
+        );
+
+        var resultProductSubImage = productsSubImageRepository.update(
+            {
+                isActive: false,
+            },
+            {
+                where: {
+                    isActive: true,
+                    productId: id
+                },
+            },
+        );
+
+        var resultProductDescriptions = productsDescriptionRepository.update(
             {
                 isActive: false,
             },

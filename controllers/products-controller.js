@@ -9,6 +9,8 @@ const productsController = {
             //unprocessed image
             requestBody.categoryId,
             requestBody.name,
+            requestBody.imageName,
+            requestBody.imagePath,
             requestBody.executedBy);
 
         var auction = await productsService.createAuctionAsync(
@@ -19,6 +21,18 @@ const productsController = {
             requestBody.productPostDate,
             requestBody.executedBy);
 
+        var productSubImage = await productsService.createproductSubImageAsync(
+            product.id,
+            requestBody.imageName2,
+            requestBody.imagePath2,
+            requestBody.executedBy);
+
+        var productDescription = await productsService.createproductDescriptionAsync(
+            product.id,
+            requestBody.description,
+            requestBody.executedBy);
+
+
         res.status(StatusCodes.CREATED).send();
     },
 
@@ -28,11 +42,11 @@ const productsController = {
         res.send(result);
     },
 
-    // async getActiveAsync(req, res) {
-    //     var result = await categoriesService.getActiveAsync(req.params.id);
+    async getProductAsync(req, res) {
+        var result = await productsService.getProductAsync(req.params.id);
 
-    //     res.send(result);
-    // },
+        res.send(result);
+    },
 
     async updateProductAsync(req, res) {
         const requestBody = req.body;
@@ -42,6 +56,11 @@ const productsController = {
             req.params.id,
             requestBody.name,
             requestBody.initPrice,
+            requestBody.imageName,
+            requestBody.imagePath,
+            requestBody.imageName2,
+            requestBody.imagePath2,
+            requestBody.description,
             requestBody.buyNowPrice,
             requestBody.productPostDate,
             requestBody.isAllowNewBidder,

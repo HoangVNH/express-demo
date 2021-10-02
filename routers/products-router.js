@@ -6,6 +6,7 @@ router.route('/')
     .post(asyncHandler(productsController.createProductAsync))
     .get(asyncHandler(productsController.getAllProductAsync));
 router.route('/:id')
+    .get(asyncHandler(productsController.getProductAsync))
     .put(asyncHandler(productsController.updateProductAsync))
     .delete(asyncHandler(productsController.inactiveProductAsync));
 
