@@ -19,12 +19,14 @@ const authenticationMiddleware = async (req, res, next) => {
     }
 
     req.claims = {
+        uid: decoded.uid,
         firstName: decoded.firstName,
         lastName: decoded.lastName,
         email: decoded.email,
         role: await rolesService.getRolesEnumFromRoleIdAsync(decoded.role),
     };
-    req.body.executedBy = decoded.id;
+    // TODO: NEED TO REMOVE
+    req.body.executedBy = decoded.uid;
 
     next();
 };

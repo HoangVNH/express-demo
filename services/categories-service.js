@@ -7,7 +7,7 @@ const UniqueConstraintViolatedException = require('./exceptions/unique-constrain
 
 const categoriesService = {
     async createActiveAsync(name, parentId, executedBy) {
-        var data = {
+        const data = {
             name: name,
             parentId: parentId,
             isActive: true,
@@ -17,7 +17,7 @@ const categoriesService = {
 
         validateAndThrowExceptionHelper(createCategorySchema, data);
 
-        var result = await getByNameAsync(data.name);
+        const result = await getByNameAsync(data.name);
         if (result === null) {
             result = categoriesRepository.create(data);
         }
@@ -35,7 +35,7 @@ const categoriesService = {
     },
 
     getAllActiveAsync() {
-        var result = categoriesRepository.findAll({
+        const result = categoriesRepository.findAll({
             attributes: [
                 'id',
                 'parentId',
@@ -63,24 +63,29 @@ const categoriesService = {
         return result;
     },
 
-    updateActiveAsync(id, name) {
-        var result = categoriesRepository.update({
-            name: name,
-        }, {
-            where: {
-                isActive: true,
-                id: id,
-            }
-        });
+    updateActiveAsync(id, name, executedBy) {
+        const result = categoriesRepository.update(
+            {
+                name: name,
+                updatedBy: executedBy,
+            },
+            {
+                where: {
+                    isActive: true,
+                    id: id,
+                }
+            },
+        );
 
         return result;
     },
 
     // TODO: Need to inactive product also
-    inactiveAsync(id) {
-        var result = categoriesRepository.update(
+    inactiveAsync(id, executedBy) {
+        const result = categoriesRepository.update(
             {
                 isActive: false,
+                updatedBy: executedBy,
             },
             {
                 where: {
@@ -98,7 +103,7 @@ const categoriesService = {
 };
 
 function getByNameAsync(name) {
-    var result = categoriesRepository.findOne({
+    const result = categoriesRepository.findOne({
         where: {
             name: name,
         },

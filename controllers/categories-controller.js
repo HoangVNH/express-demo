@@ -8,7 +8,7 @@ const categoriesController = {
         await categoriesService.createActiveAsync(
             requestBody.name,
             requestBody.parentId === undefined ? null : requestBody.parentId,
-            requestBody.executedBy);
+            req.claims.uid);
 
         res.status(StatusCodes.CREATED).send();
     },
@@ -29,13 +29,15 @@ const categoriesController = {
         const requestBody = req.body;
 
         await categoriesService.updateActiveAsync(req.params.id,
-            requestBody.name);
+            requestBody.name,
+            req.claims.uid);
 
         res.status(StatusCodes.NO_CONTENT).send();
     },
 
     async inactiveAsync(req, res) {
-        await categoriesService.inactiveAsync(req.params.id);
+        await categoriesService.inactiveAsync(req.params.id,
+            req.claims.uid);
 
         res.status(StatusCodes.NO_CONTENT).send();
     },

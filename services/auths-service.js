@@ -1,4 +1,5 @@
 const models = require("../sequelize/models");
+const { NIL: NUL_UUID } = require('uuid');
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
@@ -20,10 +21,10 @@ const accountRolesService = require("./account-roles-service");
 const emailsService = require("./emails-service");
 
 const authsService = {
-    async registerNewBidderUserAsync(firstName, lastName, email, address, password, executedBy) {
+    async registerNewBidderUserAsync(firstName, lastName, email, address, password) {
         const results = await models.sequelize.transaction(async (transaction) => {
             const user = await usersService.createAsync(
-                firstName, lastName, email, address, executedBy, transaction);
+                firstName, lastName, email, address, NUL_UUID, transaction);
 
             const account = await accountsService.createAccountAsync(
                 user.id,
@@ -138,7 +139,7 @@ const authsService = {
             throw new AccessTokenNotExpiredYetException();
         }
 
-        const account = await accountsService.getActiveAccountByIdAsync(decoded.id);
+        const account = await accountsService.getActiveAccountByIdAsync(decoded.uid);
         if (!account) {
             throw new CorruptedDataException();
         }

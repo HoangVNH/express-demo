@@ -1,14 +1,14 @@
 const RolesEnum = require('../constants/roles-enum');
 const db = require('./models');
 const models = db.sequelize.models;
+const { NIL: NUL_UUID } = require('uuid');
 
 const usersService = require("../services/users-service");
 const accountsService = require("../services/accounts-service");
 const accountRolesService = require("../services/account-roles-service");
-const authsService = require("../services/auths-service");
 
 async function initDataAsync() {
-    const executedBy = '00000000-0000-0000-0000-000000000000';
+    const executedBy = NUL_UUID;
     const executedTime = new Date();
 
     await initializingRolesAsync(executedBy, executedTime);
