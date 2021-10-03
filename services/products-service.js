@@ -29,11 +29,15 @@ const productsService = {
         return resultProduct;
     },
 
-    async createAuctionAsync(auctioneerId, productId, initPrice, buyNowPrice, productPostDate, executedBy) {
+    async createAuctionAsync(auctioneerId, productId, initPrice, stepPrice, isAllowNewBidder, endedAt, biddedBy, executedBy) {
         var dataAuction = {
             auctioneerId: auctioneerId,
             productId: productId,
             initPrice: initPrice,
+            stepPrice: stepPrice,
+            isAllowNewBidder: isAllowNewBidder,
+            endedAt: endedAt,
+            biddedBy: biddedBy,
             isActive: true,
             createdBy: executedBy,
             updatedBy: executedBy,
@@ -84,7 +88,7 @@ const productsService = {
             include: [
                 {
                     model: auctionsRepository,
-                    attributes: ['initPrice', 'endedAt'],
+                    attributes: ['initPrice', 'endedAt', 'binPrice', 'createdAt'],
                     where: {
                         isActive: true,
                     },
@@ -109,7 +113,7 @@ const productsService = {
             include: [
                 {
                     model: auctionsRepository,
-                    attributes: ['initPrice', 'endedAt', 'auctioneerId'],
+                    attributes: ['initPrice', 'endedAt', 'auctioneerId', 'binPrice', 'createdAt'],
                     where: {
                         isActive: true,
                     },

@@ -27,8 +27,10 @@ const productsController = {
             requestBody.auctioneerId,
             product.id,
             requestBody.initPrice,
-            requestBody.buyNowPrice,
-            requestBody.productPostDate,
+            requestBody.stepPrice,
+            requestBody.isAllowNewBidder,
+            requestBody.endedAt,
+            requestBody.biddedBy,
             req.claims.uid);
 
         var productSubImage = await productsService.createproductSubImageAsync(
