@@ -95,6 +95,32 @@ const accountsService = {
         return result;
     },
 
+    async getActiveAccountByIdAsync(id) {
+        var result = await repository.findOne({
+            where: {
+                isActive: true,
+                id: id,
+            },
+            include: [
+                {
+                    model: models.User,
+                    where: {
+                        isActive: true,
+                    },
+                },
+                {
+                    model: models.AccountRole,
+                    where: {
+                        isActive: true,
+                    },
+                    required: false, // USING LEFT JOIN
+                },
+            ],
+        });
+
+        return result;
+    },
+
     async verifyPasswordAsync(account, plainPassword) {
         const result = await bcrypt.compareSync(plainPassword, account.password);
 
@@ -112,16 +138,27 @@ const accountsService = {
         }
 
         account.refreshToken = uuidv4();
-        account.refreshTokenExpiryDate = new moment().add(1, 'M').toDate();
+        account.refreshTokenExpiryDate = generateRefreshTokenExpiryDate();
         account.updatedBy = executedBy;
 
-        account.save();
+        await account.save();
 
-        return account.refreshToken
-    }
+        return account.refreshToken;
+    },
+
+    async updateRefreshTokenExpiryDateAsync(account) {
+        account.refreshTokenExpiryDate = generateRefreshTokenExpiryDate();
+        account.updatedBy = account.id;
+
+        await account.save();
+    },
 };
 
 const SALT_ROUNDS = 10;
+
+function generateRefreshTokenExpiryDate() {
+    return new moment().add(1, 'M').toDate();
+}
 
 async function createAsync(userId, password, transaction) {
     var account = {

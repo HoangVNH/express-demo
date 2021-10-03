@@ -1,12 +1,18 @@
 const models = require("../sequelize/models");
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
 const CorruptedDataException = require('./exceptions/corrupted-data-exception');
 const SignInFailureException = require('./exceptions/auths/sign-in-failure-exception');
+const InvalidAccessTokenException = require('./exceptions/auths/invalid-access-token-exception');
+const AccessTokenNotExpiredYetException = require('./exceptions/auths/access-token-not-expired-yet-exception');
+const InvalidRefreshTokenException = require('./exceptions/auths/invalid-refresh-token-exception');
+const ExpiredRefreshTokenException = require('./exceptions/auths/expired-refresh-token-exception');
 
 const resendOTPSchema = require('../ajv/schemas/auths/resend-otp-schema');
 const signInSchema = require('../ajv/schemas/auths/sign-in-schema');
+const refreshAccessTokenSchema = require('../ajv/schemas/auths/refresh-access-token-schema');
 
 const usersService = require("./users-service");
 const accountsService = require("./accounts-service");
@@ -98,30 +104,75 @@ const authsService = {
             throw new SignInFailureException();
         }
 
-        const accountRoles = account.AccountRoles;
-        if (!accountRoles || accountRoles.length !== 1) {
+        if (!account.AccountRoles || account.AccountRoles.length !== 1) {
             throw new CorruptedDataException();
         }
 
         // Building tokens
-        var accessToken = jwt.sign(
-            {
-                executedBy: account.id,
-                firstName: account.User.firstName,
-                lastName: account.User.lastName,
-                email: account.User.email,
-                role: accountRoles.find(x => x).roleId,
-            },
-            process.env.PRIVATE_KEY,
-            {
-                expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-            });
+        var accessToken = await buildAccessTokenAsync(account);
         var refreshToken = await accountsService.createOrUpdateRefreshTokenAsync(
             account,
             account.id);
 
         return { accessToken, refreshToken };
     },
+
+    async refreshAccessTokenAsync(expiredAccessToken, refreshToken) {
+        const data = {
+            expiredAccessToken,
+            refreshToken,
+        };
+
+        validateAndThrowExceptionHelper(refreshAccessTokenSchema,
+            data);
+
+        var decoded = null;
+        try {
+            decoded = jwt.verify(expiredAccessToken, process.env.PRIVATE_KEY, { ignoreExpiration: true });
+        } catch (error) {
+            throw new InvalidAccessTokenException();
+        }
+
+        const executedAt = new moment().toDate();
+        if (decoded.exp > executedAt) {
+            throw new AccessTokenNotExpiredYetException();
+        }
+
+        const account = await accountsService.getActiveAccountByIdAsync(decoded.id);
+        if (!account) {
+            throw new CorruptedDataException();
+        }
+
+        if (account.refreshToken !== refreshToken) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        if (account.refreshTokenExpiryDate < executedAt) {
+            throw new ExpiredRefreshTokenException();
+        }
+
+        await accountsService.updateRefreshTokenExpiryDateAsync(account);
+        const result = await buildAccessTokenAsync(account);
+
+        return result;
+    }
 };
+
+async function buildAccessTokenAsync(account) {
+    const result = await jwt.sign(
+        {
+            id: account.id,
+            firstName: account.User.firstName,
+            lastName: account.User.lastName,
+            email: account.User.email,
+            role: account.AccountRoles.find(x => x).roleId,
+        },
+        process.env.PRIVATE_KEY,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        });
+
+    return result;
+}
 
 module.exports = authsService;

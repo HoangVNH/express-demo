@@ -24,7 +24,7 @@ const authenticationMiddleware = async (req, res, next) => {
         email: decoded.email,
         role: await rolesService.getRolesEnumFromRoleIdAsync(decoded.role),
     };
-    req.body.executedBy = decoded.executedBy;
+    req.body.executedBy = decoded.id;
 
     next();
 };

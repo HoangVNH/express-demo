@@ -52,6 +52,15 @@ const authsController = {
 
         res.status(StatusCodes.OK).send(result);
     },
+
+    async refreshAccessTokenAsync(req, res) {
+        const { accessToken, refreshToken, executedBy } = req.body;
+
+        const result = await authsService.refreshAccessTokenAsync(
+            accessToken, refreshToken, executedBy);
+
+        res.status(StatusCodes.OK).send(result);
+    },
 };
 
 module.exports = authsController;
