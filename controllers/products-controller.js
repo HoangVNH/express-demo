@@ -5,23 +5,24 @@ const productsController = {
     async createProductAsync(req, res) {
         const requestBody = req.body;
 
-        if (!req.files)
-            return res.status(400).send('No files image');
-        var file = req.files.uploaded_image;
-        var img_name = file.name;
-        filePath = 'images/upload/' + file.name;
+        // if (!req.files)
+        //     return res.status(400).send('No files image');
+        // var file = req.files.uploaded_image;
+        // var img_name = file.name;
+        // filePath = 'images/upload/' + file.name;
 
-        file.mv(filePath, function (err) {
-            if (err)
-                return res.status(500).send(err);
-        });
+        // file.mv(filePath, function (err) {
+        //     if (err)
+        //         return res.status(500).send(err);
+        // });
 
         var product = await productsService.createProductAsync(
             requestBody.categoryId,
-            requestBody.img_name,
+            requestBody.name,
             requestBody.imageName,
-            requestBody.filePath,
-            req.claims.uid);
+            requestBody.imagePath,
+            requestBody.executedBy);
+        // req.claims.uid);
 
         var auction = await productsService.createAuctionAsync(
             requestBody.auctioneerId,
@@ -31,18 +32,21 @@ const productsController = {
             requestBody.isAllowNewBidder,
             requestBody.endedAt,
             requestBody.biddedBy,
-            req.claims.uid);
+            requestBody.executedBy);
+        // req.claims.uid);
 
         var productSubImage = await productsService.createproductSubImageAsync(
             product.id,
             requestBody.imageName2,
             requestBody.imagePath2,
-            req.claims.uid);
+            requestBody.executedBy);
+        // req.claims.uid);
 
         var productDescription = await productsService.createproductDescriptionAsync(
             product.id,
             requestBody.description,
-            req.claims.uid);
+            requestBody.executedBy);
+        // req.claims.uid);
 
 
         res.status(StatusCodes.CREATED).send();
@@ -56,6 +60,12 @@ const productsController = {
 
     async getProductAsync(req, res) {
         var result = await productsService.getProductAsync(req.params.id);
+
+        res.send(result);
+    },
+
+    async topHighestPrice(req, res) {
+        var result = await productsService.topHighestPrice();
 
         res.send(result);
     },

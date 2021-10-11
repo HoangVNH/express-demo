@@ -9,5 +9,6 @@ router.route('/:id')
     .get(asyncHandler(productsController.getProductAsync))
     .put(asyncHandler(productsController.updateProductAsync))
     .delete(asyncHandler(productsController.inactiveProductAsync));
+router.route('/topHighestPrice').get(asyncHandler(productsController.topHighestPrice));
 
 module.exports = router;

@@ -23,7 +23,7 @@ const productsService = {
             updatedBy: executedBy,
         };
 
-        validateAndThrowExceptionHelper(createProductSchema, dataProduct);
+        // validateAndThrowExceptionHelper(createProductSchema, dataProduct);
 
         var resultProduct = productsRepository.create(dataProduct);
         return resultProduct;
@@ -79,6 +79,32 @@ const productsService = {
         return resultdataDescription;
     },
 
+    topHighestPrice() {
+        var result = productsRepository.findAll({
+            attributes: ['id', 'name', 'imageName', 'imagePath'],
+            where: {
+                isActive: true,
+            },
+            include: [
+                {
+                    model: auctionsRepository,
+                    attributes: ['initPrice', 'endedAt', 'binPrice', 'createdAt'],
+                    where: {
+                        isActive: true,
+                    },
+
+                    required: false,
+                    order: [['initPrice', 'desc']],
+                }
+            ],
+            limit: 5,
+            // order: [['auctionsRepository.initPrice', 'desc']]
+            // order: '"Auctions.initPrice" DESC'
+        });
+
+        return result;
+    },
+
     getAllProductAsync() {
         var result = productsRepository.findAll({
             attributes: ['id', 'name', 'imageName', 'imagePath'],
@@ -92,10 +118,9 @@ const productsService = {
                     where: {
                         isActive: true,
                     },
-                    required: false
+                    required: false,
                 }
             ],
-            required: false
         });
 
         return result;
@@ -121,7 +146,7 @@ const productsService = {
                 },
                 {
                     model: productsSubImageRepository,
-                    attributes: ['name'],
+                    attributes: ['name', 'imagePath'],
                     where: {
                         isActive: true,
                     },
@@ -242,15 +267,5 @@ const productsService = {
         return resultAuction;
     },
 };
-
-// function getByNameAsync(name) {
-//     var result = categoriesRepository.findOne({
-//         where: {
-//             name: name,
-//         },
-//     });
-
-//     return result;
-// };
 
 module.exports = productsService;
