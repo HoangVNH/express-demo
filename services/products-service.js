@@ -2,9 +2,11 @@ const productsRepository = require("../sequelize/models").Product;
 const auctionsRepository = require("../sequelize/models").Auction;
 const productsSubImageRepository = require("../sequelize/models").ProductSubImage;
 const productsDescriptionRepository = require("../sequelize/models").ProductDescription;
+const biddingLogRepository = require("../sequelize/models").BiddingLog;
 const usersRepository = require("../sequelize/models").User;
 const usersRatingRepository = require("../sequelize/models").UserRating;
 const { Op } = require("sequelize");
+var Sequelize = require('sequelize');
 
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const createProductSchema = require('../ajv/schemas/products/create-product-schema');
@@ -98,6 +100,42 @@ const productsService = {
                 }
             ],
             limit: 5,
+            // order: [['auctionsRepository.initPrice', 'desc']]
+            // order: '"Auctions.initPrice" DESC'
+        });
+
+        return result;
+    },
+    
+    topHighestBids() {
+        var result = productsRepository.findAll({
+            attributes: ['id', 'name', 'imageName', 'imagePath'],
+            where: {
+                isActive: true,
+            },
+            include: [
+                {
+                    model: auctionsRepository,
+                    attributes: ['initPrice', 'endedAt', 'binPrice', 'createdAt'],
+                    where: {
+                        isActive: true,
+                    },
+                    required: false,
+                    include: [
+                        {
+                            model: biddingLogRepository,
+                            where: {
+                                isActive: true,
+                            },
+                            required: false,
+
+                        }
+                    ]
+                }
+            ],
+            limit: 5,
+            order: [[sequelize.fn('sum', 'biddinglogs.bidderId'), 'DESC']],
+            group: ['biddinglogs.auctionId'],
             // order: [['auctionsRepository.initPrice', 'desc']]
             // order: '"Auctions.initPrice" DESC'
         });

@@ -68,6 +68,11 @@ const productsController = {
         var result = await productsService.topHighestPrice();
 
         res.send(result);
+    }, 
+    async topHighestBids(req, res) {
+        var result = await productsService.topHighestBids();
+
+        res.send(result);
     },
 
     async updateProductAsync(req, res) {
