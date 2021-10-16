@@ -81,6 +81,34 @@ const productsService = {
         return resultdataDescription;
     },
 
+    topProductNearEnd() {
+        const currentDate = moment().toDate();
+        var result = productsRepository.findAll({
+            attributes: ['id', 'name', 'imageName', 'imagePath'],
+            where: {
+                isActive: true,
+            },
+            include: [
+                {
+                    model: auctionsRepository,
+                    attributes: ['initPrice', 'endedAt', 'binPrice', 'createdAt'],
+                    where: {
+                        isActive: true,
+                        endedAt: {
+                            [Op.lt]: currentDate,
+                        }
+                    },
+
+                    required: false,
+                    order: [['endedAt', 'desc']],
+                }
+            ],
+            limit: 5,
+        });
+
+        return result;
+    },
+
     topHighestPrice() {
         var result = productsRepository.findAll({
             attributes: ['id', 'name', 'imageName', 'imagePath'],
@@ -106,7 +134,7 @@ const productsService = {
 
         return result;
     },
-    
+
     topHighestBids() {
         var result = productsRepository.findAll({
             attributes: ['id', 'name', 'imageName', 'imagePath'],

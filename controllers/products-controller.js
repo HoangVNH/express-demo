@@ -64,11 +64,17 @@ const productsController = {
         res.send(result);
     },
 
+    async topProductNearEnd(req, res) {
+        var result = await productsService.topProductNearEnd();
+
+        res.send(result);
+    },
+
     async topHighestPrice(req, res) {
         var result = await productsService.topHighestPrice();
 
         res.send(result);
-    }, 
+    },
     async topHighestBids(req, res) {
         var result = await productsService.topHighestBids();
 
