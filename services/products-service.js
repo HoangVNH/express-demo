@@ -7,6 +7,7 @@ const usersRepository = require("../sequelize/models").User;
 const usersRatingRepository = require("../sequelize/models").UserRating;
 const { Op } = require("sequelize");
 var Sequelize = require('sequelize');
+const moment = require('moment');
 
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const createProductSchema = require('../ajv/schemas/products/create-product-schema');
@@ -98,12 +99,11 @@ const productsService = {
                             [Op.lt]: currentDate,
                         }
                     },
-
                     required: false,
-                    order: [['endedAt', 'desc']],
                 }
             ],
             limit: 5,
+            order: [[auctionsRepository, 'endedAt', 'desc']]
         });
 
         return result;
@@ -124,12 +124,10 @@ const productsService = {
                     },
 
                     required: false,
-                    order: [['initPrice', 'desc']],
                 }
             ],
             limit: 5,
-            // order: [['auctionsRepository.initPrice', 'desc']]
-            // order: '"Auctions.initPrice" DESC'
+            order: [[auctionsRepository, 'initPrice', 'desc']],
         });
 
         return result;
@@ -164,8 +162,6 @@ const productsService = {
             limit: 5,
             order: [[sequelize.fn('sum', 'biddinglogs.bidderId'), 'DESC']],
             group: ['biddinglogs.auctionId'],
-            // order: [['auctionsRepository.initPrice', 'desc']]
-            // order: '"Auctions.initPrice" DESC'
         });
 
         return result;
