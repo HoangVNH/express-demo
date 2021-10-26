@@ -1,4 +1,5 @@
 const productsService = require("../services/products-service");
+const biddingService = require("../services/bidding-service");
 const { StatusCodes } = require('http-status-codes');
 
 const productsController = {
@@ -76,7 +77,7 @@ const productsController = {
         res.send(result);
     },
     async topHighestBids(req, res) {
-        var result = await productsService.topHighestBids();
+        var result = await biddingService.getCurrentBidder(req.params.id);
 
         res.send(result);
     },
