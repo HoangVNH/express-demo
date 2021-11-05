@@ -3,6 +3,7 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 fileUpload = require('express-fileupload');
 const db = require('./sequelize/models');
+var cors = require('cors')
 const exceptionHandlerMiddleware = require('./middlewares/exceptions-handler-middleware');
 const authenticationMiddleware = require('./middlewares/authentication-middleware');
 
@@ -31,6 +32,7 @@ const authenticationMiddleware = require('./middlewares/authentication-middlewar
     app.disable('x-powered-by');
 
     app.use(express.json());
+    app.use(cors());
 
     // Routing
     app.use('/api/auths', require('./routers/auths-router'));
