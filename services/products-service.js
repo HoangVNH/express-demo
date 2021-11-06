@@ -102,7 +102,6 @@ const productsService = {
                     required: false,
                 }
             ],
-            limit: 5,
             order: [[auctionsRepository, 'endedAt', 'desc']]
         });
 
@@ -122,13 +121,17 @@ const productsService = {
                     where: {
                         isActive: true,
                     },
-
                     required: false,
                 }
             ],
-            limit: 5,
+            // limit: 5,
             order: [[auctionsRepository, 'initPrice', 'desc']],
         });
+
+        // var res = [];
+        // result.forEach(element => {
+        //     res.push(element);
+        // });
 
         return result;
     },

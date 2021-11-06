@@ -17,20 +17,19 @@ const biddingsService = {
                     where: {
                         isActive: true,
                     },
-                    required: true,
+                    required: false,
                     include: [
                         {
                             model: biddingLogRepository,
                             where: {
                                 isActive: true,
                             },
-                            required: true,
+                            required: false,
 
                         }
                     ]
                 }
             ],
-            limit: 5,
             order: [[db.sequelize.fn('sum', 'biddinglogs.bidderId'), 'DESC']],
             // group: ['biddinglogs.auctionId'],
         });

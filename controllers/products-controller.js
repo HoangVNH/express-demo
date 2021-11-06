@@ -67,18 +67,28 @@ const productsController = {
 
     async topProductNearEnd(req, res) {
         var result = await productsService.topProductNearEnd();
-
+        var ret = [];
+        for (let i = 0; i < 5; i++) {
+            ret.push(result[i]);
+        }
         res.send(result);
     },
 
     async topHighestPrice(req, res) {
         var result = await productsService.topHighestPrice();
+        var ret = [];
+        for (let i = 0; i < 5; i++) {
+            ret.push(result[i]);
+        }
 
-        res.send(result);
+        res.send(ret);
     },
     async topHighestBids(req, res) {
         var result = await biddingService.getCurrentBidder();
-
+        var ret = [];
+        for (let i = 0; i < 5; i++) {
+            ret.push(result[i]);
+        }
         res.send(result);
     },
 
