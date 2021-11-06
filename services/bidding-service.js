@@ -17,14 +17,14 @@ const biddingsService = {
                     where: {
                         isActive: true,
                     },
-                    required: false,
+                    required: true,
                     include: [
                         {
                             model: biddingLogRepository,
                             where: {
                                 isActive: true,
                             },
-                            required: false,
+                            required: true,
 
                         }
                     ]
