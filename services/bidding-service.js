@@ -1,14 +1,14 @@
 const productsRepository = require("../sequelize/models").Product;
 const auctionsRepository = require("../sequelize/models").Auction;
 const biddingLogRepository = require("../sequelize/models").BiddingLog;
+const db = require('../sequelize/models');
 
 const biddingsService = {
-    async getCurrentBidder(productId) {
+    async getCurrentBidder() {
         var result = productsRepository.findAll({
             attributes: ['id', 'name', 'imageName', 'imagePath'],
             where: {
-                isActive: true,
-                id: productId
+                isActive: true
             },
             include: [
                 {
@@ -31,8 +31,8 @@ const biddingsService = {
                 }
             ],
             limit: 5,
-            order: [[sequelize.fn('sum', 'biddinglogs.bidderId'), 'DESC']],
-            group: ['biddinglogs.auctionId'],
+            order: [[db.sequelize.fn('sum', 'biddinglogs.bidderId'), 'DESC']],
+            // group: ['biddinglogs.auctionId'],
         });
 
         return result;

@@ -77,7 +77,7 @@ const productsController = {
         res.send(result);
     },
     async topHighestBids(req, res) {
-        var result = await biddingService.getCurrentBidder(req.params.id);
+        var result = await biddingService.getCurrentBidder();
 
         res.send(result);
     },
