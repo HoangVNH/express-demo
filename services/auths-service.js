@@ -21,10 +21,16 @@ const accountRolesService = require("./account-roles-service");
 const emailsService = require("./emails-service");
 
 const authsService = {
-    async registerNewBidderUserAsync(firstName, lastName, email, address, password) {
+    async registerNewBidderUserAsync(firstName, lastName, dob, email, address, password) {
         const results = await models.sequelize.transaction(async (transaction) => {
             const user = await usersService.createAsync(
-                firstName, lastName, email, address, NUL_UUID, transaction);
+                firstName,
+                lastName,
+                dob,
+                email,
+                address,
+                NUL_UUID,
+                transaction);
 
             const account = await accountsService.createAccountAsync(
                 user.id,
@@ -156,7 +162,7 @@ const authsService = {
         const result = await buildAccessTokenAsync(account);
 
         return result;
-    }
+    },
 };
 
 async function buildAccessTokenAsync(account) {

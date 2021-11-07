@@ -2,6 +2,7 @@ const RolesEnum = require('../constants/roles-enum');
 const db = require('./models');
 const models = db.sequelize.models;
 const { NIL: NUL_UUID } = require('uuid');
+const moment = require('moment');
 
 const usersService = require("../services/users-service");
 const accountsService = require("../services/accounts-service");
@@ -54,7 +55,7 @@ async function initializingAdministratorAccountAsync(executedBy) {
     if (users.count === 0) {
         await db.sequelize.transaction(async (transaction) => {
             const user = await usersService.createAsync(
-                'Administrator', '', 'admined@yopmail.com', '', executedBy, transaction);
+                'Administrator', '', new moment().format('YYYY-MM-DD'), 'admined@yopmail.com', '', executedBy, transaction);
 
             const account = await accountsService.createAccountAsync(
                 user.id,
