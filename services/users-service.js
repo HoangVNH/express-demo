@@ -7,10 +7,11 @@ const UniqueConstraintViolatedException = require('./exceptions/unique-constrain
 const createUserSchema = require('../ajv/schemas/users/create-user-schema');
 
 const usersService = {
-    async createAsync(firstName, lastName, email, address, executedBy, transaction) {
+    async createAsync(firstName, lastName, dob, email, address, executedBy, transaction) {
         var data = {
             firstName,
             lastName,
+            dob,
             email,
             address,
             isActive: true,

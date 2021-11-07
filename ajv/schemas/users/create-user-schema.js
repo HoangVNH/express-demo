@@ -3,6 +3,10 @@ const schema = {
     properties: {
         firstName: { type: 'string' },
         lastName: { type: 'string' },
+        dob: {
+            type: 'string',
+            format: 'date',
+        },
         email: {
             type: 'string',
             format: 'email',
@@ -15,6 +19,7 @@ const schema = {
     required: [
         'firstName',
         'lastName',
+        'dob',
         'email',
         'address',
         'isActive',

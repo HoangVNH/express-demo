@@ -38,6 +38,10 @@ module.exports = (sequelize) => {
             allowNull: false,
             type: DataTypes.STRING,
         },
+        dob: {
+            allowNull: false,
+            type: DataTypes.DATEONLY,
+        },
         email: {
             allowNull: false,
             type: DataTypes.STRING,
