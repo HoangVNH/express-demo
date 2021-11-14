@@ -12,6 +12,9 @@ module.exports = (sequelize) => {
          */
         static associate(models) {
             // define association here
+            models.BiddingLog.belongsTo(models.User, {
+                foreignKey: 'bidderId',
+            });
         }
     };
     BiddingLog.init({

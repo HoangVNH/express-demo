@@ -184,6 +184,26 @@ const productsService = {
                         isActive: true,
                     },
                     required: false,
+                    include: [
+                        {
+                            model: biddingLogRepository,
+                            where: {
+                                isActive: true,
+                            },
+                            required: false,
+                            include: [
+                                {
+                                    model: usersRepository,
+                                    where: {
+                                        isActive: true,
+                                    },
+                                    required: false,
+
+                                }
+                            ]
+
+                        }
+                    ]
                 }
             ],
         });
