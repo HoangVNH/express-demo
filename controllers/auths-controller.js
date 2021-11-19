@@ -61,6 +61,20 @@ const authsController = {
 
         res.status(StatusCodes.OK).send(result);
     },
+
+    async updateProfileAsync(req, res) {
+        const { firstName, lastName, dob, email, address, } = req.body;
+
+        await authsService.updateProfileAsync(
+            firstName,
+            lastName,
+            dob,
+            email,
+            address,
+            req.claims.uid);
+
+        res.status(StatusCodes.ACCEPTED).send();
+    },
 };
 
 module.exports = authsController;
