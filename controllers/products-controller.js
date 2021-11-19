@@ -22,8 +22,7 @@ const productsController = {
             requestBody.name,
             requestBody.imageName,
             requestBody.imagePath,
-            requestBody.executedBy);
-        // req.claims.uid);
+            req.claims.uid);
 
         var auction = await productsService.createAuctionAsync(
             requestBody.auctioneerId,
@@ -33,21 +32,18 @@ const productsController = {
             requestBody.isAllowNewBidder,
             requestBody.endedAt,
             requestBody.biddedBy,
-            requestBody.executedBy);
-        // req.claims.uid);
+            req.claims.uid);
 
         var productSubImage = await productsService.createproductSubImageAsync(
             product.id,
             requestBody.imageName2,
             requestBody.imagePath2,
-            requestBody.executedBy);
-        // req.claims.uid);
+            req.claims.uid);
 
         var productDescription = await productsService.createproductDescriptionAsync(
             product.id,
             requestBody.description,
-            requestBody.executedBy);
-        // req.claims.uid);
+            req.claims.uid);
 
 
         res.status(StatusCodes.CREATED).send();
