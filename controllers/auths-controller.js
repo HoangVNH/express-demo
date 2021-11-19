@@ -5,11 +5,12 @@ const TooManyRequestResendOTPException = require('../services/exceptions/account
 
 const authsController = {
     async registerNewBidderAsync(req, res) {
-        const { firstName, lastName, email, address, password } = req.body;
+        const { firstName, lastName, dob, email, address, password } = req.body;
 
         await authsService.registerNewBidderUserAsync(
             firstName,
             lastName,
+            dob,
             email,
             address,
             password);
