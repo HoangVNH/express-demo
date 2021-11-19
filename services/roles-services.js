@@ -57,9 +57,9 @@ const rolesService = {
     async getRolesEnumFromRoleIdAsync(roleId) {
         if (roleId === await this.getAdministratorRoleIdAsync()) {
             return RolesEnum.Administrator;
-        } else if (oleId === await this.getSalerRoleIdAsync()) {
+        } else if (roleId === await this.getSalerRoleIdAsync()) {
             return RolesEnum.Saler;
-        } else if (oleId === await this.getBidderRoleIdAsync()) {
+        } else if (roleId === await this.getBidderRoleIdAsync()) {
             return RolesEnum.Bidder;
         }
     },
