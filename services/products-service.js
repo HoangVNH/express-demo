@@ -4,6 +4,7 @@ const productsSubImageRepository = require("../sequelize/models").ProductSubImag
 const productsDescriptionRepository = require("../sequelize/models").ProductDescription;
 const biddingLogRepository = require("../sequelize/models").BiddingLog;
 const usersRepository = require("../sequelize/models").User;
+const categoriesRepository = require("../sequelize/models").Category;
 const usersRatingRepository = require("../sequelize/models").UserRating;
 const { Op } = require("sequelize");
 var Sequelize = require('sequelize');
@@ -214,39 +215,127 @@ const productsService = {
     getProductAsync(id) {
 
 
-        var result = productsRepository.findOne({
-            attributes: ['name', 'imageName', 'imagePath'],
+        var result = categoriesRepository.findOne({
+            attributes: ['parentId', 'name'],
             where: {
                 isActive: true,
-                id: id,
             },
             include: [
                 {
-                    model: auctionsRepository,
-                    attributes: ['initPrice', 'endedAt', 'auctioneerId', 'binPrice', 'createdAt'],
+                    model: productsRepository,
+                    attributes: ['name', 'imageName', 'imagePath'],
                     where: {
                         isActive: true,
+                        id: id,
                     },
-                    required: false,
-                },
-                {
-                    model: productsSubImageRepository,
-                    attributes: ['name', 'imagePath'],
-                    where: {
-                        isActive: true,
-                    },
-                    required: false
-                },
-                {
-                    model: productsDescriptionRepository,
-                    attributes: ['description'],
-                    where: {
-                        isActive: true,
-                    },
-                    required: false
-                },
-            ],
+                    required: false,    
+                    include: [
+                        {
+                            model: auctionsRepository,
+                            attributes: ['initPrice', 'endedAt', 'auctioneerId', 'binPrice', 'createdAt'],
+                            where: {
+                                isActive: true,
+                            },
+                            required: false,
+                            include: [
+                                {
+                                    model: biddingLogRepository,
+                                    where: {
+                                        isActive: true,
+                                    },
+                                    required: false,
+                                    include: [
+                                        {
+                                            model: usersRepository,
+                                            where: {
+                                                isActive: true,
+                                            },
+                                            required: false,
+
+                                        }
+                                    ]
+
+                                }
+                            ]
+                        },
+
+                        {
+                            model: productsSubImageRepository,
+                            attributes: ['name', 'imagePath'],
+                            where: {
+                                isActive: true,
+                            },
+                            required: false
+                        },
+                        {
+                            model: productsDescriptionRepository,
+                            attributes: ['description'],
+                            where: {
+                                isActive: true,
+                            },
+                            required: false
+                        },
+
+                    ],
+                }
+            ]
         });
+
+        // var result = productsRepository.findOne({
+        //     attributes: ['name', 'imageName', 'imagePath'],
+        //     where: {
+        //         isActive: true,
+        //         id: id,
+        //     },
+        //     include: [
+        //         {
+        //             model: auctionsRepository,
+        //             attributes: ['initPrice', 'endedAt', 'auctioneerId', 'binPrice', 'createdAt'],
+        //             where: {
+        //                 isActive: true,
+        //             },
+        //             required: false,
+        //             include: [
+        //                 {
+        //                     model: biddingLogRepository,
+        //                     where: {
+        //                         isActive: true,
+        //                     },
+        //                     required: false,
+        //                     include: [
+        //                         {
+        //                             model: usersRepository,
+        //                             where: {
+        //                                 isActive: true,
+        //                             },
+        //                             required: false,
+
+        //                         }
+        //                     ]
+
+        //                 }
+        //             ]
+        //         },
+
+        //         {
+        //             model: productsSubImageRepository,
+        //             attributes: ['name', 'imagePath'],
+        //             where: {
+        //                 isActive: true,
+        //             },
+        //             required: false
+        //         },
+        //         {
+        //             model: productsDescriptionRepository,
+        //             attributes: ['description'],
+        //             where: {
+        //                 isActive: true,
+        //             },
+        //             required: false
+        //         },
+
+        //     ],
+        // });
 
         return result;
     },
