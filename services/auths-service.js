@@ -163,12 +163,36 @@ const authsService = {
 
         return result;
     },
+
+    async updateProfileAsync(firstName, lastName, dob, email, address, executedBy) {
+        await models.sequelize.transaction(async (transaction) => {
+            var user = await usersService.updateProfileAsync(firstName,
+                lastName,
+                dob,
+                email,
+                address,
+                executedBy,
+                transaction);
+
+            if (email.toLowerCase() !== user.email.toLowerCase()) {
+                await accountsService.resetOtpWhenUpdateEmailAsync(user.account,
+                    transaction);
+
+                // Send OTP via Email
+                await emailsService.sendUserRegistrationEmailAsync(
+                    user.firstName,
+                    user.lastName,
+                    user.email,
+                    account.otp);
+            }
+        });
+    },
 };
 
 async function buildAccessTokenAsync(account) {
     const result = await jwt.sign(
         {
-            id: account.id,
+            uid: account.id,
             firstName: account.User.firstName,
             lastName: account.User.lastName,
             email: account.User.email,
