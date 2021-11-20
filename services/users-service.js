@@ -3,8 +3,10 @@ const repository = models.User;
 
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
+const UserDoesNotExistException = require('./exceptions/users/user-does-not-exist-exception');
 
 const createUserSchema = require('../ajv/schemas/users/create-user-schema');
+const updateProfileSchema = require('../ajv/schemas/users/update-profile-schema');
 
 const usersService = {
     async createAsync(firstName, lastName, dob, email, address, executedBy, transaction) {
@@ -47,7 +49,59 @@ const usersService = {
 
         return result;
     },
+
+    async updateProfileAsync(firstName, lastName, dob, email, address, executedBy, transaction) {
+        const data = {
+            id: executedBy,
+            firstName,
+            lastName,
+            dob,
+            email,
+            address,
+            updatedBy: executedBy,
+        };
+
+        validateAndThrowExceptionHelper(updateProfileSchema, data);
+
+        const result = await getActiveByIdAsync(data.id,
+            [
+                {
+                    model: models.Account,
+                    where: {
+                        isActive: true,
+                    },
+                },
+            ],
+            transaction);
+        if (result === null) {
+            throw new UserDoesNotExistException(data.id);
+        }
+
+        result.firstName = data.firstName;
+        result.lastName = data.lastName;
+        result.dob = data.dob;
+        result.email = data.email;
+        result.address = data.address;
+        result.updatedBy = executedBy;
+
+        await result.save({ transaction });
+
+        return result;
+    }
 };
+
+async function getActiveByIdAsync(id, include, transaction) {
+    var result = await repository.findOne({
+        where: {
+            id,
+            isActive: true,
+        },
+        include,
+        transaction,
+    });
+
+    return result;
+}
 
 async function isExistEmailAsync(email) {
     // TODO: enhance this method to check exist actually and return true/false only,

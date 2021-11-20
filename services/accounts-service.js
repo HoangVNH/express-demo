@@ -152,6 +152,20 @@ const accountsService = {
 
         await account.save();
     },
+
+    async resetOtpWhenUpdateEmailAsync(account, transaction) {
+        if (account === null || account.isActive === false) {
+            throw new CorruptedDataException();
+        }
+
+        // Generating random OTP & OTP expiry date
+        account.isOtpVerified = false;
+        account.otp = generateOTP();
+        account.otpExpiryDate = generateOTPExpiryDate();
+        account.otpResendDate = generateOTPResendDate();
+
+        await account.save({ transaction });
+    }
 };
 
 const SALT_ROUNDS = 10;
