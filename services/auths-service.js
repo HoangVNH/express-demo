@@ -164,9 +164,11 @@ const authsService = {
         return result;
     },
 
-    async updateProfileAsync(firstName, lastName, dob, email, address, executedBy) {
+    async updateProfileAsync(id, firstName, lastName, dob, email, address, executedBy) {
         await models.sequelize.transaction(async (transaction) => {
-            var user = await usersService.updateProfileAsync(firstName,
+            var user = await usersService.updateProfileAsync(
+                id,
+                firstName,
                 lastName,
                 dob,
                 email,

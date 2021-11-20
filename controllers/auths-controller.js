@@ -66,6 +66,7 @@ const authsController = {
         const { firstName, lastName, dob, email, address, } = req.body;
 
         await authsService.updateProfileAsync(
+            req.claims.uid,
             firstName,
             lastName,
             dob,
