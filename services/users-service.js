@@ -50,9 +50,9 @@ const usersService = {
         return result;
     },
 
-    async updateProfileAsync(firstName, lastName, dob, email, address, executedBy, transaction) {
+    async updateProfileAsync(id, firstName, lastName, dob, email, address, executedBy, transaction) {
         const data = {
-            id: executedBy,
+            id,
             firstName,
             lastName,
             dob,
