@@ -6,6 +6,12 @@ const usersController = {
 
         res.send(result);
     },
+
+    async getActiveAsync(req, res) {
+        var result = await usersService.getActiveAsync(req.params.id);
+
+        res.send(result);
+    },
 }
 
 module.exports = usersController;

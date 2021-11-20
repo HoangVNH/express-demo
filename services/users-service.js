@@ -138,7 +138,59 @@ const usersService = {
         await result.save({ transaction });
 
         return result;
-    }
+    },
+
+    async getActiveAsync(id) {
+        var result = await repository.findOne({
+            attributes: [
+                'id',
+                'firstName',
+                'lastName',
+                'dob',
+                'email',
+                'address',
+            ],
+            where: {
+                id,
+                isActive: true,
+            },
+            include: {
+                model: models.Account,
+                attributes: [
+                    'isOtpVerified',
+                    'isActive',
+                ],
+                required: false, // USING LEFT JOIN
+                include: [
+                    {
+                        model: models.AccountRole,
+                        attributes: [
+                            'roleId',
+                        ],
+                        where: {
+                            isActive: true,
+                        },
+                        required: false, // USING LEFT JOIN
+                        include: [
+                            {
+                                model: models.Role,
+                                attributes: [
+                                    'roleName'
+                                ],
+                                attributes: [
+                                    ['name', 'roleName'],
+                                ],
+                            },
+                        ],
+                    },
+
+                ],
+            },
+            // raw: true, // flatten return object
+        });
+
+        return result;
+    },
 };
 
 async function getActiveByIdAsync(id, include, transaction) {

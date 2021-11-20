@@ -4,5 +4,7 @@ const usersController = require('../controllers/users-controller');
 
 router.route('/')
     .get(asyncHandler(usersController.getAllActiveAsync));
+router.route('/:id')
+    .get(asyncHandler(usersController.getActiveAsync));
 
 module.exports = router;
