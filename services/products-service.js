@@ -18,15 +18,15 @@ const createDescriptionSchema = require('../ajv/schemas/products/create-descript
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
 
 const productsService = {
-    async createProductAsync(categoryId, name, imageName, imagePath, executedBy) {
+    async createProductAsync(categoryId, name, imageName, imagePath, uid) {
         var dataProduct = {
             categoryId: categoryId,
             name: name,
             imageName: imageName,
             imagePath: imagePath,
             isActive: true,
-            createdBy: executedBy,
-            updatedBy: executedBy,
+            createdBy: uid,
+            updatedBy: uid,
         };
 
         validateAndThrowExceptionHelper(createProductSchema, dataProduct);
@@ -35,7 +35,7 @@ const productsService = {
         return resultProduct;
     },
 
-    async createAuctionAsync(auctioneerId, productId, initPrice, stepPrice, isAllowNewBidder, endedAt, biddedBy, executedBy) {
+    async createAuctionAsync(auctioneerId, productId, initPrice, stepPrice, isAllowNewBidder, endedAt, biddedBy, uid) {
         var dataAuction = {
             auctioneerId: auctioneerId,
             productId: productId,
@@ -45,8 +45,8 @@ const productsService = {
             endedAt: endedAt,
             biddedBy: biddedBy,
             isActive: true,
-            createdBy: executedBy,
-            updatedBy: executedBy,
+            createdBy: uid,
+            updatedBy: uid,
         };
 
         validateAndThrowExceptionHelper(createAuctionSchema, dataAuction);
@@ -56,14 +56,14 @@ const productsService = {
         return resultAuction;
     },
 
-    async createproductSubImageAsync(productId, imageName2, imagePath2, executedBy) {
+    async createproductSubImageAsync(productId, imageName2, imagePath2, uid) {
         var dataSubImage = {
             name: imageName2,
             productId: productId,
             imagePath: imagePath2,
             isActive: true,
-            createdBy: executedBy,
-            updatedBy: executedBy,
+            createdBy: uid,
+            updatedBy: uid,
         };
 
         validateAndThrowExceptionHelper(createSubImageSchema, dataSubImage);
@@ -73,13 +73,13 @@ const productsService = {
         return resultdataSubImage;
     },
 
-    async createproductDescriptionAsync(productId, description, executedBy) {
+    async createproductDescriptionAsync(productId, description, uid) {
         var dataDescription = {
             description: description,
             productId: productId,
             isActive: true,
-            createdBy: executedBy,
-            updatedBy: executedBy,
+            createdBy: uid,
+            updatedBy: uid,
         };
 
         validateAndThrowExceptionHelper(createDescriptionSchema, dataDescription);
