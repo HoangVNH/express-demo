@@ -33,6 +33,57 @@ const usersService = {
         return result;
     },
 
+    async getAllActiveAsync() {
+        var result = await repository.findAll({
+            attributes: [
+                'id',
+                'firstName',
+                'lastName',
+                'dob',
+                'email',
+                'address',
+            ],
+            where: {
+                isActive: true,
+            },
+            include: {
+                model: models.Account,
+                attributes: [
+                    'isOtpVerified',
+                    'isActive',
+                ],
+                required: false, // USING LEFT JOIN
+                include: [
+                    {
+                        model: models.AccountRole,
+                        attributes: [
+                            'roleId',
+                        ],
+                        where: {
+                            isActive: true,
+                        },
+                        required: false, // USING LEFT JOIN
+                        include: [
+                            {
+                                model: models.Role,
+                                attributes: [
+                                    'roleName'
+                                ],
+                                attributes: [
+                                    ['name', 'roleName'],
+                                ],
+                            },
+                        ],
+                    },
+
+                ],
+            },
+            // raw: true, // flatten return object
+        });
+
+        return result;
+    },
+
     async getActiveUserByEmailAsync(email, attributes) {
         var result = await repository.findOne({
             attributes,
