@@ -13,6 +13,8 @@ const moment = require('moment');
 const validateAndThrowExceptionHelper = require('../ajv/helpers/validate-and-throw-exception-helper');
 const createProductSchema = require('../ajv/schemas/products/create-product-schema');
 const createAuctionSchema = require('../ajv/schemas/products/create-auction-schema');
+const createSubImageSchema = require('../ajv/schemas/products/create-sub-image-schema');
+const createDescriptionSchema = require('../ajv/schemas/products/create-description-schema');
 const UniqueConstraintViolatedException = require('./exceptions/unique-constraint-violated-exception');
 
 const productsService = {
@@ -27,7 +29,7 @@ const productsService = {
             updatedBy: executedBy,
         };
 
-        // validateAndThrowExceptionHelper(createProductSchema, dataProduct);
+        validateAndThrowExceptionHelper(createProductSchema, dataProduct);
 
         var resultProduct = productsRepository.create(dataProduct);
         return resultProduct;
@@ -47,7 +49,7 @@ const productsService = {
             updatedBy: executedBy,
         };
 
-        // validateAndThrowExceptionHelper(createAuctionSchema, dataAuction);
+        validateAndThrowExceptionHelper(createAuctionSchema, dataAuction);
 
         var resultAuction = auctionsRepository.create(dataAuction);
 
@@ -64,6 +66,8 @@ const productsService = {
             updatedBy: executedBy,
         };
 
+        validateAndThrowExceptionHelper(createSubImageSchema, dataSubImage);
+
         var resultdataSubImage = productsSubImageRepository.create(dataSubImage);
 
         return resultdataSubImage;
@@ -77,6 +81,8 @@ const productsService = {
             createdBy: executedBy,
             updatedBy: executedBy,
         };
+
+        validateAndThrowExceptionHelper(createDescriptionSchema, dataDescription);
 
         var resultdataDescription = productsDescriptionRepository.create(dataDescription);
 
@@ -213,8 +219,6 @@ const productsService = {
     },
 
     getProductAsync(id) {
-
-
         var result = categoriesRepository.findOne({
             attributes: ['parentId', 'name'],
             where: {
@@ -228,7 +232,6 @@ const productsService = {
                         isActive: true,
                         id: id,
                     },
-                    required: false,    
                     include: [
                         {
                             model: auctionsRepository,
