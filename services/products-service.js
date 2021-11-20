@@ -89,6 +89,61 @@ const productsService = {
         return resultdataDescription;
     },
 
+    searchProduct(categoryId, product) {
+        var result = categoriesRepository.findOne({
+            attributes: ['parentId', 'name'],
+            where: {
+                isActive: true,
+                id: categoryId
+            },
+            include: [
+                {
+                    model: productsRepository,
+                    attributes: ['name', 'imageName', 'imagePath'],
+                    where: {
+                        isActive: true,
+                        name: {
+                            [Op.substring]: product
+                        }
+                    },
+                    include: [
+                        {
+                            model: auctionsRepository,
+                            attributes: ['initPrice', 'endedAt', 'auctioneerId', 'binPrice', 'createdAt'],
+                            where: {
+                                isActive: true,
+                            },
+                            required: false,
+                            include: [
+                                {
+                                    model: biddingLogRepository,
+                                    where: {
+                                        isActive: true,
+                                    },
+                                    required: false,
+                                    include: [
+                                        {
+                                            model: usersRepository,
+                                            where: {
+                                                isActive: true,
+                                            },
+                                            required: false,
+
+                                        }
+                                    ]
+
+                                }
+                            ]
+                        },
+
+                    ],
+                }
+            ]
+        });
+
+        return result;
+    },
+
     topProductNearEnd() {
         const currentDate = moment().toDate();
         var result = productsRepository.findAll({

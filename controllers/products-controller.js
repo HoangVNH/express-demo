@@ -49,6 +49,13 @@ const productsController = {
         res.status(StatusCodes.CREATED).send();
     },
 
+    async searchProduct(req, res) {
+        const requestBody = req.body;
+        var result = await productsService.searchProduct(requestBody.categoryId, requestBody.product);
+
+        res.send(result);
+    },
+
     async getAllProductAsync(req, res) {
         var result = await productsService.getAllProductAsync();
 
